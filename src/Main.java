@@ -10,18 +10,17 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane root = new BorderPane();
-		
 		try {
 			
-			Scene scene = new Scene(root,640,480);
+			Scene scene = new Scene(root,720,450);
 			scene.getStylesheets().add(getClass().getResource("resources/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			primaryStage.setResizable(true);
 			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-//		root.setCenter(new HBox());
 		root.setCenter(new RootLayout());
 	}
 	

@@ -1,19 +1,25 @@
 
 import java.io.IOException;
+import java.util.Iterator;
 
+import com.sun.javafx.geom.Path2D;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 
 public class RootLayout extends AnchorPane{
 
@@ -38,7 +44,6 @@ public class RootLayout extends AnchorPane{
 		
 		try { 
 			fxmlLoader.load();
-        
 		} catch (IOException exception) {
 		    throw new RuntimeException(exception);
 		}
@@ -51,24 +56,59 @@ public class RootLayout extends AnchorPane{
 		//This is added as a child to the root anchorpane so it can be visible
 		//on both sides of the split pane.
 		mDragOverIcon = new DragIcon();
-		
 		mDragOverIcon.setVisible(false);
 		mDragOverIcon.setOpacity(0.65);
 		getChildren().add(mDragOverIcon);
 		
 		//populate left pane with multiple colored icons for testing
-		for (int i = 0; i < 7; i++) {
-			
+		for (int i = 0; i < 2; i++) {
 			DragIcon icn = new DragIcon();
-			
 			addDragDetection(icn);
-			
 			icn.setType(DragIconType.values()[i]);
+
 			left_pane.getChildren().add(icn);
 		}
-		
+		ToggleButton linker = new ToggleButton("----------");
+		linker.setOnMouseClicked(event -> {
+			if (linker.isSelected())  {
+					right_pane.setStyle("-fx-background-color: red");
+			} else {
+					right_pane.setStyle("-fx-background-color: transparent");
+			}
+		});
+//		linker.getStyleClass().add("linker");
+		    left_pane.getChildren().add(linker);
 		buildDragHandlers();
+//        right_pane.setOnMouseClicked(event -> {
+////
+//            right_pane.getChildren().addAll(new GraphicsContext(){
+//
+//            });
+//        });
+//		right_pane.setOnMouseClicked(event -> {
+//			Iterator iter = right_pane.getChildren().iterator();
+//			while (iter.hasNext()){
+//				Object object = iter.next();
+//				if (object instanceof DraggableNode)
+//				((DraggableNode) iter.next()).setEditableFalse();
+//			}
+//		});
 	}
+//    void drawArrow(GraphicsContext gc, int x1, int y1, int x2, int y2) {
+//        gc.setFill(Color.BLACK);
+//        double ARR_SIZE = 8;
+//        double dx = x2 - x1, dy = y2 - y1;
+//        double angle = Math.atan2(dy, dx);
+//        int len = (int) Math.sqrt(dx * dx + dy * dy);
+//
+//        Transform transform = Transform.translate(x1, y1);
+//        transform = transform.createConcatenation(Transform.rotate(Math.toDegrees(angle), 0, 0));
+//        gc.setTransform(new Affine(transform));
+//
+//        gc.strokeLine(0, 0, len, 0);
+//        gc.fillPolygon(new double[]{len, len - ARR_SIZE, len - ARR_SIZE, len}, new double[]{0, -ARR_SIZE, ARR_SIZE, 0},
+//                4);
+//    }
 	
 	private void addDragDetection(DragIcon dragIcon) {
 		
