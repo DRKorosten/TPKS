@@ -24,3 +24,7 @@
 	-fx-pref-width:125;
 	-fx-pref-height:125 ;
 }
+.border{
+	-fx-border-width: 10px;
+	-fx-border-color: green;
+}

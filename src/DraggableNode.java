@@ -5,33 +5,37 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 public class DraggableNode extends AnchorPane {
-	@FXML AnchorPane root_pane;
-	@FXML
-	Circle top;
-	@FXML Circle bottom;
 
-		private EventHandler <DragEvent> mContextDragOver;
-		private EventHandler <DragEvent> mContextDragDropped;
-		
-		private DragIconType mType = null;
-		
-		private Point2D mDragOffset = new Point2D (0.0, 0.0);
-	    @FXML private VBox element;
-	    @FXML private TextArea text;
-		@FXML private Button close_button;
-		
-		private final DraggableNode self;
-		
-		public DraggableNode() {
+
+	private RootLayout layout;
+	@FXML AnchorPane root_pane;
+	@FXML Circle top;
+	@FXML Circle bottom;
+	@FXML Circle left;
+	@FXML Circle right;
+	ObjectModel model;
+	private EventHandler <DragEvent> mContextDragOver;
+	private EventHandler <DragEvent> mContextDragDropped;
+	private DragIconType mType = null;
+	private Point2D mDragOffset = new Point2D (0.0, 0.0);
+	@FXML private VBox element;
+	@FXML private TextArea text;
+	@FXML private Button closeButton;
+	private final DraggableNode self;
+
+
+
+	//Single constructor
+		public DraggableNode(RootLayout lay) {
 			
 			FXMLLoader fxmlLoader = new FXMLLoader(
 					getClass().getResource("resources/DraggableNode.fxml")
@@ -48,20 +52,14 @@ public class DraggableNode extends AnchorPane {
 			} catch (IOException exception) {
 			    throw new RuntimeException(exception);
 			}
+			layout = lay;
 		}
-		
+
+
+    //Block of initial settings
 		@FXML
 		private void initialize() {
-			top.setRadius(5);
-			top.setFill(Color.BLACK);
-			top.setCenterX(root_pane.getPrefWidth()/2);
-			bottom.setRadius(5);
-			bottom.setFill(Color.BLACK);
-			bottom.setCenterX(root_pane.getPrefWidth()/2);
-			bottom.setCenterY(root_pane.getPrefHeight());
-			close_button.setStyle("-fx-font-size: 10");
-			text.setWrapText(true);
-			text.getStylesheets().add(getClass().getResource("resources/textCenter.css").toExternalForm());
+			this.getStylesheets().add(getClass().getResource("resources/textCenter.css").toExternalForm());
 			text.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent mouseEvent) {
@@ -74,10 +72,9 @@ public class DraggableNode extends AnchorPane {
 			});
 			buildNodeDragHandlers();
 		}
-	public void setEditableFalse(){
-		text.setEditable(false);
-	}
-		
+
+
+
 		public void relocateToPoint (Point2D p) {
 
 			//relocates the object to a point that has been converted to
@@ -89,13 +86,17 @@ public class DraggableNode extends AnchorPane {
 					(int) (localCoords.getY() - mDragOffset.getY())
 				);
 		}
+
+
 		
 		public DragIconType getType () { return mType; }
+
+
 		
 		public void setType (DragIconType type) {
 			
 			mType = type;
-			
+			model = new ObjectModel(mType);
 			getStyleClass().clear();
 			getStyleClass().add("dragicon");
 			
@@ -103,17 +104,76 @@ public class DraggableNode extends AnchorPane {
 			case rectangle:
 					getStyleClass().add("rectangle");
 					getStyleClass().add("rectangleSize");
+				top.setRadius(5);
+				top.setFill(Color.BLACK);
+				top.setCenterX(root_pane.getPrefWidth()/2);
+				top.setCenterY(-1);
+				bottom.setRadius(5);
+				bottom.setFill(Color.BLACK);
+				bottom.setCenterX(root_pane.getPrefWidth()/2);
+				bottom.setCenterY(root_pane.getPrefHeight()+1);
+				left.setRadius(5);
+				left.setFill(Color.BLACK);
+				left.setCenterX(-1);
+				left.setCenterY(root_pane.getPrefHeight()/2);
+				right.setRadius(5);
+				right.setFill(Color.BLACK);
+				right.setCenterX(root_pane.getPrefWidth()+1);
+				right.setCenterY(root_pane.getPrefHeight()/2);
 					break;
 
 				case rhomb:
 					getStyleClass().add("rhomb");
 					getStyleClass().add("rhombSize");
+					top.setRadius(5);
+					top.setFill(Color.BLACK);
+					top.setCenterX(10);
+					top.setCenterY(10);
+					bottom.setRadius(5);
+					bottom.setFill(Color.BLACK);
+					bottom.setCenterX(115);
+					bottom.setCenterY(115);
+					left.setRadius(5);
+					left.setFill(Color.BLACK);
+					left.setCenterX(10);
+					left.setCenterY(115);
+					right.setRadius(5);
+					right.setFill(Color.BLACK);
+					right.setCenterX(115);
+					right.setCenterY(10);
 					break;
 			
 			default:
 			break;
 			}
+            addOnClickedCirlce(bottom);
+            addOnClickedCirlce(top);
+            addOnClickedCirlce(left);
+            addOnClickedCirlce(right);
 		}
+
+
+
+	     private void addOnClickedCirlce(Circle circle){
+			 circle.setOnMouseClicked(event -> {
+				if (layout.isFirstTarget()){
+//					if (getType().equals(DragIconType.rectangle)){
+//					}
+
+					Point2D localCoords = getParent().sceneToLocal(new Point2D(event.getSceneX(),event.getSceneY()));
+					Line line = new Line(localCoords.getX(),localCoords.getY(),localCoords.getX(),localCoords.getY());
+					line.setStrokeWidth(2);
+                    layout.startDrawLine(line);
+                    layout.setFirstTarget(false);
+					event.consume();
+				}else {
+//                    layout.setMouseMoveEvent();
+                    layout.setFirstTarget(true);
+                }
+			});
+	       }
+
+
 		
 		public void buildNodeDragHandlers() {
 			
@@ -144,8 +204,9 @@ public class DraggableNode extends AnchorPane {
 					event.consume();
 				}
 			};
+
 			//close button click
-			close_button.setOnMouseClicked( new EventHandler <MouseEvent> () {
+			closeButton.setOnMouseClicked(new EventHandler <MouseEvent> () {
 
 				@Override
 				public void handle(MouseEvent event) {
@@ -154,7 +215,7 @@ public class DraggableNode extends AnchorPane {
 				}
 
 			});
-			
+
 			//drag detection for node dragging
 			root_pane.setOnDragDetected ( new EventHandler <MouseEvent> () {
 

@@ -9,9 +9,9 @@ import javafx.scene.layout.AnchorPane;
 public class DragIcon extends AnchorPane{
 	
 	@FXML AnchorPane root_pane;
-
 	private DragIconType mType = null;
 	
+
 	public DragIcon() {
 		
 		FXMLLoader fxmlLoader = new FXMLLoader(
@@ -49,7 +49,6 @@ public class DragIcon extends AnchorPane{
 	public void setType (DragIconType type) {
 		
 		mType = type;
-		
 		getStyleClass().clear();
 		getStyleClass().add("dragicon");
 		
