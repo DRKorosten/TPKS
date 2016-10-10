@@ -3,6 +3,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.ClipboardContent;
@@ -54,7 +55,7 @@ public class RootLayout extends AnchorPane{
 		getChildren().add(mDragOverIcon);
 
 		//create all items on left pane
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 4; i++) {
 			DragIcon icn = new DragIcon();
 			addDragDetection(icn);
 			icn.setType(DragIconType.values()[i]);
@@ -196,20 +197,39 @@ public class RootLayout extends AnchorPane{
 				
 				if (container != null) {
 					if (container.getValue("scene_coords") != null) {
-					
-						DraggableNode node = new DraggableNode(t);
-						
-						node.setType(DragIconType.valueOf(container.getValue("type")));
-						right_pane.getChildren().add(node);
+						if (!DragIconType.valueOf(container.getValue("type")).equals(DragIconType.start) && !DragIconType.valueOf(container.getValue("type")).equals(DragIconType.end)) {
+							DraggableNode node = new DraggableNode(t);
 
-						Point2D cursorPoint = container.getValue("scene_coords");
+							node.setType(DragIconType.valueOf(container.getValue("type")));
+							right_pane.getChildren().add(node);
 
-						node.relocateToPoint(
-								new Point2D(cursorPoint.getX() - 32, cursorPoint.getY() - 32)
-								);
+							Point2D cursorPoint = container.getValue("scene_coords");
+
+							node.relocateToPoint(
+									new Point2D(cursorPoint.getX() - 32, cursorPoint.getY() - 32)
+							);
+						}else{
+							for (Node node : right_pane.getChildren()
+								 ) {
+								if (node instanceof DraggableNode)
+								if (((DraggableNode)(node)).getType().equals(DragIconType.valueOf(container.getValue("type")))){
+									return;
+								}
+							}
+							DraggableNode node = new DraggableNode(t);
+
+							node.setType(DragIconType.valueOf(container.getValue("type")));
+							right_pane.getChildren().add(node);
+
+							Point2D cursorPoint = container.getValue("scene_coords");
+
+							node.relocateToPoint(
+									new Point2D(cursorPoint.getX() - 32, cursorPoint.getY() - 32)
+							);
+						}
 					}
 				}
-				
+
 				container = 
 						(DragContainer) event.getDragboard().getContent(DragContainer.DragNode);
 				
@@ -229,5 +249,6 @@ public class RootLayout extends AnchorPane{
 	public void setFirstTarget(boolean firstTarget) {
 		isFirstTarget = firstTarget;
 	}
+
 
 }

@@ -1,6 +1,8 @@
 
 
 public enum DragIconType {
-	rectangle,
-    rhomb
+	start,
+    rectangle,
+    rhomb,
+    end
 }

@@ -1,21 +1,29 @@
 .dragicon {
-	-fx-background-radius: 10; 
-}
-.rectangle {
+	-fx-background-radius: 10;
 	-fx-background-color: transparent;
 	-fx-border-radius: 2px;
 	-fx-border-color: black;
+}
+.start,.end {
+    -fx-background-radius: 30;
+    -fx-border-radius: 30px;
+    -fx-border-color: black;
+    -fx-background-color: #7ecfff;
+}
+.smallSize{
+    -fx-pref-width:64;
+    -fx-pref-height:32 ;
+}
+.endSize{
+	-fx-background-size: cover;
 }
 .rectangleSize{
 	-fx-pref-width:150;
 	-fx-pref-height: 75 ;
 }
 .rhomb{
-	-fx-background-color: transparent;
 	-fx-rotate: 45;
 	-fx-border-insets: 10,10,10,10;
-	-fx-border-radius: 2px;
-	-fx-border-color: black;
 	-fx-pref-width:70 ;
 	-fx-pref-height:70 ;
 
