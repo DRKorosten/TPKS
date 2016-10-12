@@ -1,4 +1,6 @@
 import java.io.IOException;
+
+import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -65,22 +67,53 @@ public class RootLayout extends AnchorPane{
 	}
 
 
-	public void startDrawLine(Line line){
+	public void drawLine(Circle circle){
 		if (isFirstTarget) {
-			right_pane.getChildren().add(line);
+			isFirstTarget = false;
+//			System.out.println("adopted x y "+localCoords.getX()+" "+localCoords.getY());
+			Line tempLine = new Line();
+			tempLine.startXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
+			tempLine.startYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
+			tempLine.setEndX(circle.centerXProperty().add(circle.getParent().layoutXProperty()).doubleValue());
+			tempLine.setEndY(circle.centerYProperty().add(circle.getParent().layoutYProperty()).doubleValue());
+			tempLine.setStrokeWidth(2);
+			right_pane.getChildren().add(tempLine);
 			right_pane.setOnMouseMoved(event -> {
-						line.setEndX(event.getX());
-						line.setEndY(event.getY());
-			});
-			line.setOnMouseClicked(event -> {
-				if (event.getClickCount()==2){
-					right_pane.getChildren().remove(line);
+				if (event.getX()>tempLine.getStartX()){
+					tempLine.setEndX(event.getX()-2);
+				}else {
+					tempLine.setEndX(event.getX()+2);
+				}
+				if (event.getY()>tempLine.getStartY()){
+					tempLine.setEndY(event.getY()-2);
+				}else {
+					tempLine.setEndY(event.getY()+2);
 				}
 			});
-			right_pane.setOnMouseClicked(event -> right_pane.setOnMouseMoved(null));
+			tempLine.setOnMouseClicked(event -> {
+				if (event.getClickCount()==2){
+					right_pane.getChildren().remove(tempLine);
+					event.consume();
+				}
+			});
+			right_pane.setOnMouseClicked(event -> {
+//				System.out.println("source "+event.getSource());
+				System.out.println("target "+event.getTarget());
+				if (!(event.getTarget() instanceof Circle)){
+					right_pane.getChildren().remove(tempLine);
+					isFirstTarget = true;
+				}
+			});
+			line = tempLine;
 		}
 		else {
+				right_pane.setOnMouseMoved(null);
 
+					line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()).subtract(2));
+					line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()).subtract(2));
+			right_pane.setOnMouseClicked(null);
+				line = null;
+				isFirstTarget = true;
 		}
 	}
 

@@ -15,8 +15,8 @@
       <VBox fx:id="element" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
              <Button fx:id="closeButton" prefHeight="5" prefWidth="5" text="X" />
-             <TextArea fx:id="text" editable="false" wrapText="true">
-             </TextArea>
+             <TextField fx:id="text" editable="false" >
+             </TextField>
          </children>
       </VBox>
        <Circle fx:id="right" ></Circle>

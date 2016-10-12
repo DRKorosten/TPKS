@@ -4,6 +4,9 @@
 	-fx-border-radius: 2px;
 	-fx-border-color: black;
 }
+Circle:hover{
+	-fx-fill: red;
+}
 .start,.end {
     -fx-background-radius: 30;
     -fx-border-radius: 30px;
@@ -22,15 +25,11 @@
 	-fx-pref-height: 75 ;
 }
 .rhomb{
-	-fx-rotate: 45;
-	-fx-border-insets: 10,10,10,10;
-	-fx-pref-width:70 ;
-	-fx-pref-height:70 ;
-
-}
-.rhombSize{
-	-fx-pref-width:125;
-	-fx-pref-height:125 ;
+	-fx-border-color: transparent;
+	-fx-background-image: url("rhomb.png");
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: contain;
 }
 .border{
 	-fx-border-width: 10px;

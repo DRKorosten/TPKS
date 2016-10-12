@@ -1,28 +1,18 @@
-.text-area *.text {
+.text-field *.text {
     -fx-text-alignment: center;
     -fx-background-color: transparent;
 }
 #closeButton {
 -fx-font-size: 10;
 }
-.text-area{
+.text-field{
+    -fx-alignment: center;
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
-.text-area *{
+.text-field *{
     -fx-background-color: transparent;
 }
-.rhombSize .text-area {
-    -fx-rotate: -45;
-    -fx-pref-height: 40;
-    -fx-translate-y: 8;
-}
-
-.text-area .content {
+.text-field .content {
     -fx-background-color: transparent;
-}
-
-
-.text-area:focused {
-    -fx-highlight-fill: #7ecfff;
 }
