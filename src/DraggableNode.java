@@ -1,24 +1,17 @@
 import java.io.IOException;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -72,9 +65,9 @@ public class DraggableNode extends AnchorPane {
 			text.textProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue.length()<9){
 					text.setText(newValue);
+					model.setText(newValue);
 				}else text.setText(oldValue);
 			});
-			System.out.println(self.getPrefHeight());
 			buildNodeDragHandlers();
 		}
 
@@ -85,7 +78,7 @@ public class DraggableNode extends AnchorPane {
 			//relocates the object to a point that has been converted to
 			//scene coordinates
 			Point2D localCoords = getParent().sceneToLocal(p);
-			
+			model.setLayout(localCoords);
 			relocate ( 
 					(int) (localCoords.getX() - mDragOffset.getX()),
 					(int) (localCoords.getY() - mDragOffset.getY())
@@ -96,12 +89,21 @@ public class DraggableNode extends AnchorPane {
 		
 		public DragIconType getType () { return mType; }
 
+        public DraggableNode(RootLayout lay,ObjectModel sourse){
+			this(lay);
+			setType(sourse.type);
+			model = sourse;
+			text.setText(sourse.text);
+			setLayoutX(sourse.layoutX);
+			setLayoutY(sourse.layoutY);
 
+		}
 		
 		public void setType (DragIconType type) {
 			
 			mType = type;
-			model = new ObjectModel(mType);
+			model = new ObjectModel(mType,new Point2D(this.getLayoutX(),this.getLayoutY()));
+			layout.addModel(model);
 			getStyleClass().clear();
 			
 			switch (mType) {
@@ -142,14 +144,6 @@ public class DraggableNode extends AnchorPane {
 				bottom.setFill(Color.BLACK);
 				bottom.setCenterX(root_pane.getPrefWidth()/2);
 				bottom.setCenterY(root_pane.getPrefHeight()+2);
-				left.setRadius(5);
-				left.setFill(Color.BLACK);
-				left.setCenterX(-1);
-				left.setCenterY(root_pane.getPrefHeight()/2);
-				right.setRadius(5);
-				right.setFill(Color.BLACK);
-				right.setCenterX(root_pane.getPrefWidth()+2);
-				right.setCenterY(root_pane.getPrefHeight()/2);
 					break;
 
 				case rhomb:
@@ -159,10 +153,6 @@ public class DraggableNode extends AnchorPane {
 					top.setFill(Color.BLACK);
 					top.setCenterX(root_pane.getPrefWidth()/2);
 					top.setCenterY(-2);
-					bottom.setRadius(5);
-					bottom.setFill(Color.BLACK);
-					bottom.setCenterX(root_pane.getPrefWidth()/2);
-					bottom.setCenterY(root_pane.getPrefHeight()+2);
 					left.setRadius(5);
 					left.setFill(Color.BLACK);
 					left.setCenterX(-1);
@@ -181,7 +171,6 @@ public class DraggableNode extends AnchorPane {
 				public void handle(MouseEvent mouseEvent) {
 					if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
 						if(mouseEvent.getClickCount() == 2){
-							System.out.println("Edit");
 							text.setEditable(true);
 						}
 					}
@@ -193,16 +182,38 @@ public class DraggableNode extends AnchorPane {
             addOnClickedCirlce(right);
 		}
 
+		public  ObjectModel getModel(){
+			return model;
+		}
 
 
 	     private void addOnClickedCirlce(Circle circle){
 			 circle.setOnMouseClicked(event -> {
-				 Point2D local = sceneToLocal(event.getSceneX(),event.getSceneY());
+				    if (!layout.isFirstTarget()){
+						model.addEntry(getType(circle));
+					}else {
+
+					}
 					layout.drawLine(circle);
 					event.consume();
-
 			});
 	       }
+
+	       public LinkSideType getType(Circle circle){
+			   if (circle.getCenterX()>0 && circle.getCenterY()>0 ){
+				   if (circle.getCenterY()>this.getPrefHeight()){
+					   return LinkSideType.bottom;
+				   }else {
+					   return LinkSideType.right;
+				   }
+			   }else {
+				   if (circle.getCenterY()>0){
+					   return LinkSideType.left;
+				   }else {
+					   return LinkSideType.top;
+				   }
+			   }
+		   }
 
 
 		
@@ -242,6 +253,7 @@ public class DraggableNode extends AnchorPane {
 				@Override
 				public void handle(MouseEvent event) {
 					AnchorPane parent  = (AnchorPane) self.getParent();
+					layout.removeModel(model);
 					parent.getChildren().remove(self);
 				}
 

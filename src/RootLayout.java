@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
@@ -13,12 +15,14 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 
 public class RootLayout extends AnchorPane{
 	//Local variables
 	private boolean isFirstTarget = true;
+	public ArrayList<ObjectModel> models = new ArrayList<>();
 	@FXML SplitPane base_pane;
 	@FXML AnchorPane right_pane;
 	@FXML VBox left_pane;
@@ -66,11 +70,21 @@ public class RootLayout extends AnchorPane{
 		buildDragHandlers();
 	}
 
+	public void addModel(ObjectModel model){
+		models.add(model);
+	}
+	public void removeModel(ObjectModel model){
+		models.remove(model);
+	}
+	public  void createNODE(ObjectModel model){
+		DraggableNode node = new DraggableNode(this,model);
+		right_pane.getChildren().add(node);
+	}
+
 
 	public void drawLine(Circle circle){
 		if (isFirstTarget) {
 			isFirstTarget = false;
-//			System.out.println("adopted x y "+localCoords.getX()+" "+localCoords.getY());
 			Line tempLine = new Line();
 			tempLine.startXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
 			tempLine.startYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
@@ -92,13 +106,35 @@ public class RootLayout extends AnchorPane{
 			});
 			tempLine.setOnMouseClicked(event -> {
 				if (event.getClickCount()==2){
+					double x = line.getStartX();
+					double y = line.getStartY();
+					for (Node node: right_pane.getChildren()
+						 ) {
+						if (node instanceof DraggableNode) {
+							for (Node cNode : ((DraggableNode) node).getChildren()) {
+								if (cNode instanceof Circle) {
+									if (Math.abs(((Circle) cNode).getCenterX()+ cNode.getParent().getLayoutX() -x)<5
+											&& Math.abs(((Circle) cNode).getCenterY()+cNode.getParent().getLayoutY() - y)<5) {
+										if (!((DraggableNode) node).getType().equals(DragIconType.rhomb)){
+											((DraggableNode) node).getModel().removeOut(((DraggableNode) node).getType((Circle) cNode),true);
+										}
+
+									}
+								}
+							}
+						}
+					}
+					System.out.println();
 					right_pane.getChildren().remove(tempLine);
 					event.consume();
+					for (ObjectModel model1:models
+						 ) {
+					}
+
 				}
 			});
 			right_pane.setOnMouseClicked(event -> {
 //				System.out.println("source "+event.getSource());
-				System.out.println("target "+event.getTarget());
 				if (!(event.getTarget() instanceof Circle)){
 					right_pane.getChildren().remove(tempLine);
 					isFirstTarget = true;
@@ -108,11 +144,10 @@ public class RootLayout extends AnchorPane{
 		}
 		else {
 				right_pane.setOnMouseMoved(null);
-
-					line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()).subtract(2));
-					line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()).subtract(2));
+					line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
+					line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
 			right_pane.setOnMouseClicked(null);
-				line = null;
+//				line = null;
 				isFirstTarget = true;
 		}
 	}
@@ -284,4 +319,63 @@ public class RootLayout extends AnchorPane{
 	}
 
 
+	public void showAfterLoad() {
+		clearRP();
+		int k = models.size();
+			for (int i = 0; i < k; i++) {
+				createNODE(models.get(i));
+
+	}
+		}
+		public void clearRP(){
+			right_pane.getChildren().clear();
+		}
+
+	public double[][] getLines() {
+		int k =0;
+		for (Node node:right_pane.getChildren()){
+			if (node instanceof Line){
+				k++;
+			}
+		}
+		double[][] lines = new double[k][4];
+		k=0;
+		for (Node node:right_pane.getChildren()){
+			if (node instanceof Line){
+				lines[k][0]=((Line) node).getStartX();
+				lines[k][1]=((Line) node).getStartY();
+				lines[k][2]=((Line) node).getEndX();
+				lines[k][3]=((Line) node).getEndY();
+				k++;
+			}
+		}
+		return lines;
+	}
+
+	public void createLines(double[][] linesCoordinates) {
+		for (int i = 0; i < linesCoordinates.length; i++){
+			Line line = new Line();
+			right_pane.getChildren().add(line);
+			for (Node node:right_pane.getChildren()){
+				if (node instanceof DraggableNode){
+					for (Node cNode:((DraggableNode) node).getChildren()){
+						if (cNode instanceof Circle){
+							if (Math.abs(((Circle) cNode).getCenterX()+ cNode.getParent().getLayoutX() - linesCoordinates[i][0])<5
+									&& Math.abs(((Circle) cNode).getCenterY()+cNode.getParent().getLayoutY() - linesCoordinates[i][1])<5) {
+								line.startXProperty().bind(((Circle) cNode).centerXProperty().add(node.layoutXProperty()));
+								line.startYProperty().bind(((Circle) cNode).centerYProperty().add(node.layoutYProperty()));
+
+							}else{
+								if (Math.abs(((Circle) cNode).getCenterX()+ cNode.getParent().getLayoutX() - linesCoordinates[i][2])<5
+										&& Math.abs(((Circle) cNode).getCenterY()+cNode.getParent().getLayoutY() - linesCoordinates[i][3])<5){
+									line.endXProperty().bind(((Circle) cNode).centerXProperty().add(node.layoutXProperty()));
+									line.endYProperty().bind(((Circle) cNode).centerYProperty().add(node.layoutYProperty()));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

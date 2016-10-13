@@ -4,6 +4,9 @@
 }
 #closeButton {
 -fx-font-size: 10;
+    -fx-alignment: top-right;
+    /*-fx-translate-x: 150;*/
+    /*-fx-translate-y: -20;*/
 }
 .text-field{
     -fx-alignment: center;
