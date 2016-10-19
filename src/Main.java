@@ -1,4 +1,5 @@
 
+import com.sun.javafx.tk.Toolkit;
 import javafx.application.Application;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -14,6 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Window;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,7 +24,6 @@ public class Main extends Application {
 RootLayout layout;
 
 	void save(File f)  {
-		if(f.equals(null)) return;
 		try {
 			FileWriter fstream1 = new FileWriter(f);// конструктор с одним параметром - для перезаписи
 			BufferedWriter out1 = new BufferedWriter(fstream1); //  создаём буферезированный поток
@@ -41,13 +42,13 @@ RootLayout layout;
 	}
 
 	void open(File f){
-		if(f.equals(null)) return;
 		try{
 			FileInputStream fis = new FileInputStream(f);
 			ObjectInputStream oin = new ObjectInputStream(fis);
 			Data data = (Data) oin.readObject();
-			layout.models = data.models;
-			layout.showAfterLoad();
+			layout.showAfterLoad(data.models);
+			layout.models.clear();
+			layout.models.addAll(data.models);
 			layout.createLines(data.linesCoordinates);
 			fis.close();
 			oin.close();
@@ -71,7 +72,9 @@ RootLayout layout;
 				new FileChooser.ExtensionFilter("All files", "*.*"),
 				new FileChooser.ExtensionFilter("TPKS", "*.tpks")
 		);
-		if(s == "save") return fileChooser.showSaveDialog(primaryStage);
+		if(s == "save") {
+			return fileChooser.showSaveDialog(primaryStage);
+		}
 		return fileChooser.showOpenDialog(primaryStage);
 
 	}
@@ -105,20 +108,21 @@ RootLayout layout;
 
 			newMenuItem.setOnAction(actionEvent ->{
 				layout.clearRP();
-
+				layout.models.clear();
 			});
 
 
 			openMenuItem.setOnAction(actionEvent ->{
-				File file = getFiles("open",primaryStage);
+				File file = getFiles("open",new Stage());
+				layout.models.clear();
+				if (file!=null)
 				open(file);
-
 			});
 
 			saveMenuItem.setOnAction(actionEvent ->{
-				File file = getFiles("save",primaryStage);
+				File file = getFiles("save",new Stage());
+				if (file!=null)
 				save(file);
-
 			});
 
 
@@ -129,7 +133,7 @@ RootLayout layout;
 			about.setOnAction(actionEvent -> {
 
 				BorderPane p = new BorderPane();
-				p.setCenter(new Label("Автор: Райзберг Д. Середюк М."));
+				p.setCenter(new Label("Авторы: Райзберг Д. Середюк М."));
 
 				Stage stage = new Stage();
 				stage.setTitle("About");

@@ -78,7 +78,7 @@ public class DraggableNode extends AnchorPane {
 			//relocates the object to a point that has been converted to
 			//scene coordinates
 			Point2D localCoords = getParent().sceneToLocal(p);
-			model.setLayout(localCoords);
+			model.setLayout(new Point2D((localCoords.getX() - mDragOffset.getX()),(localCoords.getY() - mDragOffset.getY())));
 			relocate ( 
 					(int) (localCoords.getX() - mDragOffset.getX()),
 					(int) (localCoords.getY() - mDragOffset.getY())

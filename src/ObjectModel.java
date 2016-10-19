@@ -13,6 +13,8 @@ public class ObjectModel implements Serializable{
 
     public ObjectModel(DragIconType type,Point2D layout){
         this.type = type;
+        layoutX = layout.getX();
+        layoutY = layout.getY();
         entry = LinkSideType.none;
         if (type.equals(DragIconType.rectangle)) {
             out = new LinkSideType[1];
@@ -70,6 +72,6 @@ public class ObjectModel implements Serializable{
 
     @Override
     public String toString() {
-        return type.toString() + (layoutX) +" "+(layoutY)+" "+ " "+ out[0]+" "+ (out.length > 1 ? out[1]: " ")+ " "+entry;
+        return type.toString() +" "+ (layoutX) +" "+(layoutY)+" "+ " "+ out[0]+" "+ (out.length > 1 ? out[1]: " ")+ " "+entry;
     }
 }
