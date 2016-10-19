@@ -1,9 +1,12 @@
 
 import com.sun.javafx.tk.Toolkit;
 import javafx.application.Application;
+import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -21,7 +24,8 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Main extends Application {
-RootLayout layout;
+	RootLayout layout;
+	boolean debugMode = true;
 
 	void save(File f)  {
 		try {
@@ -102,6 +106,12 @@ RootLayout layout;
 			MenuItem exitMenuItem = new MenuItem("Exit");
 			exitMenuItem.setOnAction(actionEvent -> Platform.exit());
 
+			// Check menu - highlightUnconnected
+			Menu checkMenu = new Menu("Check");
+			MenuItem highlightUnconnected = new MenuItem("Подсветить висячие");
+			highlightUnconnected.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
+			checkMenu.getItems().add(highlightUnconnected);
+
 			openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
 			saveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 			newMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
@@ -116,13 +126,44 @@ RootLayout layout;
 				File file = getFiles("open",new Stage());
 				layout.models.clear();
 				if (file!=null)
-				open(file);
+					open(file);
 			});
 
 			saveMenuItem.setOnAction(actionEvent ->{
 				File file = getFiles("save",new Stage());
 				if (file!=null)
-				save(file);
+					save(file);
+			});
+
+			highlightUnconnected.setOnAction(event -> {
+				if (debugMode){
+					layout.right_pane.setDisable(true);
+					for (Node node:	layout.right_pane.getChildren() ) {
+						if (node instanceof DraggableNode &&
+								!((DraggableNode) node).getType().equals(DragIconType.start) &&
+								!((DraggableNode) node).getType().equals(DragIconType.end)){
+							System.out.println(((DraggableNode) node).model);
+							if (((DraggableNode) node).model.entry.equals(LinkSideType.none)){
+								node.setEffect(new DropShadow(10, Color.RED));
+							}else {
+								for (int i = 0; i < ((DraggableNode) node).model.out.length; i++) {
+									if (((DraggableNode) node).model.out[i].equals(LinkSideType.none)){
+										node.setEffect(new DropShadow(10, Color.RED));
+										break;
+									}
+								}
+							}
+						}
+					}
+				}else{
+					layout.right_pane.setDisable(false);
+					for (Node node:	layout.right_pane.getChildren() ) {
+						if (node instanceof DraggableNode) {
+							node.setEffect(null);
+						}
+					}
+				}
+				debugMode = !debugMode;
 			});
 
 
@@ -143,7 +184,7 @@ RootLayout layout;
 
 			help.getItems().addAll(about);
 
-			menuBar.getMenus().addAll(fileMenu, help);
+			menuBar.getMenus().addAll(fileMenu, checkMenu,help);
 
 
 		} catch(Exception e) {

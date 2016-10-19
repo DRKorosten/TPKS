@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -254,8 +256,49 @@ public class DraggableNode extends AnchorPane {
 				public void handle(MouseEvent event) {
 					AnchorPane parent  = (AnchorPane) self.getParent();
 					layout.removeModel(model);
+
+					ArrayList<Line> l = new ArrayList<Line>();
+
+					for (Node node : parent.getChildren()) {
+
+						if (node instanceof Line) {
+
+							double xs = ((Line) node).getStartX() - root_pane.getLayoutX();
+							double ys = ((Line) node).getStartY() - root_pane.getLayoutY() ;
+							double xe = ((Line) node).getEndX() - root_pane.getLayoutX();
+							double ye = ((Line) node).getEndY() - root_pane.getLayoutY();
+							boolean fromStart = false;
+							if((fromStart = top.contains(xs,ys)) || top.contains(xe,ye)){
+								setNoneValue((Line)node,fromStart, LinkSideType.top);
+								l.add((Line)node);
+
+							}else
+							if(fromStart = bottom.contains(xs,ys) ||
+									bottom.contains(xe,ye)){
+								setNoneValue((Line)node,fromStart, LinkSideType.bottom);
+								l.add((Line)node);
+							} else
+							if(fromStart = right.contains(xs,ys) ||
+									right.contains(xe,ye)){
+								setNoneValue((Line)node,fromStart, LinkSideType.right);
+								l.add((Line)node);
+
+							}else
+							if(fromStart = left.contains(xs,ys) ||
+									left.contains(xe,ye)) {
+								setNoneValue((Line)node,fromStart, LinkSideType.left);
+								l.add((Line) node);
+							}
+							}
+					}
+
 					parent.getChildren().remove(self);
+					for (Node node : l){
+						parent.getChildren().remove(node);
+					}
+
 				}
+
 
 			});
 
@@ -290,5 +333,12 @@ public class DraggableNode extends AnchorPane {
 				}
 				
 			});		
-		}		
+		}
+
+	private void setNoneValue(Line line, boolean start, LinkSideType type) {
+//		for (:
+//			 ) {
+//
+//		}
+	}
 }
