@@ -1,28 +1,29 @@
 import javafx.geometry.Point2D;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class ObjectModel implements Serializable{
     DragIconType type;
     String text = "";
     double layoutX;
     double layoutY;
-    LinkSideType entry ;
-    LinkSideType[] out;
+    ArrayList<DraggableNode> entry ;
+    DraggableNode[] out;
 
 
     public ObjectModel(DragIconType type,Point2D layout){
         this.type = type;
         layoutX = layout.getX();
         layoutY = layout.getY();
-        entry = LinkSideType.none;
+        entry = null;
         if (type.equals(DragIconType.rectangle)) {
-            out = new LinkSideType[1];
-            out[0]=LinkSideType.none;
+            out = new DraggableNode[1];
+            out[0]=null;
         }else {
-            out = new LinkSideType[2];
-            out[0]=LinkSideType.none;
-            out[1]=LinkSideType.none;
+            out = new DraggableNode[2];
+            out[0]=null;
+            out[1]=null;
         }
     }
 
@@ -34,39 +35,30 @@ public class ObjectModel implements Serializable{
         layoutX = point.getX();
         layoutY = point.getY();
     }
-    public boolean addEntry(LinkSideType type){
-        if (entry.equals(LinkSideType.none)){
-            entry = type;
+    public boolean addEntry(DraggableNode node){
+        entry.add(node);
+
             return true;
-        }else {
-            return false;
-        }
     }
-    public void removeEntry(){
-        entry = LinkSideType.none;
+    public void removeEntry(DraggableNode node){
+        entry.remove(entry.indexOf(node));
     }
-    public boolean addOut(LinkSideType type,boolean bool) {
+    public void addOut(DraggableNode node,boolean bool) {
+        if(out.length==1) out[0] = node;
         if (bool) {
-            if (out[0].equals(LinkSideType.none)) {
-                out[0] = type;
-                return true;
-            }
+                out[0] = node;
 
         } else {
-            if (out.length == 2) {
-                if (out[1].equals(LinkSideType.none)) {
-                    out[1] = type;
-                    return true;
-                }
-            }
+            out[1] = node;
         }
-        return false;
     }
-    public void removeOut(LinkSideType type, boolean bool){
-        if (bool){
-            out[0] = LinkSideType.none;
-        }else {
-            out[1]=LinkSideType.none;
+    public void removeOut(boolean bool){
+        if(out.length==1) out[0] = null;
+        if (bool) {
+            out[0] = null;
+
+        } else {
+            out[1] = null;
         }
     }
 

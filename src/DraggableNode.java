@@ -29,7 +29,7 @@ public class DraggableNode extends AnchorPane {
 	ObjectModel model;
 	private EventHandler <DragEvent> mContextDragOver;
 	private EventHandler <DragEvent> mContextDragDropped;
-	private DragIconType mType = null;
+	 DragIconType mType = null;
 	private Point2D mDragOffset = new Point2D (0.0, 0.0);
 	@FXML private VBox element;
 	@FXML private TextField text;
@@ -191,11 +191,11 @@ public class DraggableNode extends AnchorPane {
 
 	     private void addOnClickedCirlce(Circle circle){
 			 circle.setOnMouseClicked(event -> {
-				    if (!layout.isFirstTarget()){
-						model.addEntry(getType(circle));
-					}else {
-
-					}
+//				    if (!layout.isFirstTarget()){
+//						model.addEntry(getType(circle));
+//					}else {
+//
+//					}
 					layout.drawLine(circle);
 					event.consume();
 			});
@@ -340,5 +340,39 @@ public class DraggableNode extends AnchorPane {
 //			 ) {
 //
 //		}
+	}
+
+	/**
+	 * check does this point in circle
+	 * @param xin
+	 * @param yin
+	 * @return
+	 */
+	public boolean con(double xin, double yin){
+		double x = xin - root_pane.getLayoutX();
+		double y = yin - root_pane.getLayoutY() ;
+		if(
+				top.contains(x,y)||bottom.contains(x,y)||right.contains(x,y)||left.contains(x,y)
+				) return true;
+		return false;
+	}
+	/**
+	 * check this point in which circle
+	 * @param xin
+	 * @param yin
+	 * @return
+	 */
+	public LinkSideType whatCircleContain(double xin, double yin){
+		double x = xin - root_pane.getLayoutX();
+		double y = yin - root_pane.getLayoutY() ;
+		if(top.contains(x,y)){
+			return LinkSideType.top;
+		}else if(bottom.contains(x,y)){
+			return LinkSideType.bottom;
+		}else if(right.contains(x,y)){
+			return LinkSideType.right;
+		}else
+			return LinkSideType.left;
+
 	}
 }

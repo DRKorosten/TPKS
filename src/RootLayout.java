@@ -356,31 +356,55 @@ public class RootLayout extends AnchorPane {
     private void setDeleteOnDoubleClick(Line line ){
         line.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                double x = line.getStartX();
-                double y = line.getStartY();
-                for (Node node : right_pane.getChildren()
-                        ) {
-                    if (node instanceof DraggableNode) {
-                        for (Node cNode : ((DraggableNode) node).getChildren()) {
-                            if (cNode instanceof Circle) {
-                                if (Math.abs(((Circle) cNode).getCenterX() + cNode.getParent().getLayoutX() - x) < 5
-                                        && Math.abs(((Circle) cNode).getCenterY() + cNode.getParent().getLayoutY() - y) < 5) {
-                                    if (!((DraggableNode) node).getType().equals(DragIconType.rhomb)) {
-                                        ((DraggableNode) node).getModel().removeOut(((DraggableNode) node).getType((Circle) cNode), true);
-                                    }
+                DraggableNode[] nodes = getNodesFromLine(line);
 
-                                }
-                            }
+                switch (nodes[0].mType){
+                    case start:
+
+                        break;
+                    case rectangle:
+                        switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
+                            case top:
+                                break;
+                            case :
+                                break;
                         }
-                    }
+                        break;
+                    case rhomb:
+                        break;
+                    case end:
+                        break;
                 }
+
+
+
+
+
                 right_pane.getChildren().remove(line);
                 event.consume();
-                for (ObjectModel model1 : models
-                        ) {
-                }
-
             }
         });
     }
+
+    /**
+     * return array of two() draggable nodes that connected by link
+     * @param l
+     * @return
+     */
+    private DraggableNode[] getNodesFromLine(Line l){
+        DraggableNode[] res = new DraggableNode[2];
+
+        for(Node node: right_pane.getChildren()){
+            if(node instanceof DraggableNode){
+                if(((DraggableNode)node).con(l.getStartX(),l.getStartY())){
+                    res[0] = (DraggableNode) node;
+                }else if(((DraggableNode)node).con(l.getEndX(),l.getEndY())) {
+                    res[1] = (DraggableNode) node;
+                }
+            }
+
+        }
+        return res;
+    }
+
 }
