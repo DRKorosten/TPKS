@@ -119,12 +119,16 @@ public class RootLayout extends AnchorPane {
                 }
             });
             line = tempLine;
+
         } else {
             right_pane.setOnMouseMoved(null);
             line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
             line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
+            wireLink(line);
             right_pane.setOnMouseClicked(null);
             isFirstTarget = true;
+
+
         }
     }
 
@@ -333,14 +337,14 @@ public class RootLayout extends AnchorPane {
                 if (node instanceof DraggableNode) {
                     for (Node cNode : ((DraggableNode) node).getChildren()) {
                         if (cNode instanceof Circle) {
-                            if (Math.abs(((Circle) cNode).getCenterX() + cNode.getParent().getLayoutX() - linesCoordinates[i][0]) < 5
-                                    && Math.abs(((Circle) cNode).getCenterY() + cNode.getParent().getLayoutY() - linesCoordinates[i][1]) < 5) {
+                            if (Math.abs(((Circle) cNode).getCenterX() + cNode.getParent().getLayoutX() - linesCoordinates[i][0]) < 3
+                                    && Math.abs(((Circle) cNode).getCenterY() + cNode.getParent().getLayoutY() - linesCoordinates[i][1]) < 3) {
                                 line.startXProperty().bind(((Circle) cNode).centerXProperty().add(node.layoutXProperty()));
                                 line.startYProperty().bind(((Circle) cNode).centerYProperty().add(node.layoutYProperty()));
 
                             } else {
-                                if (Math.abs(((Circle) cNode).getCenterX() + cNode.getParent().getLayoutX() - linesCoordinates[i][2]) < 5
-                                        && Math.abs(((Circle) cNode).getCenterY() + cNode.getParent().getLayoutY() - linesCoordinates[i][3]) < 5) {
+                                if (Math.abs(((Circle) cNode).getCenterX() + cNode.getParent().getLayoutX() - linesCoordinates[i][2]) < 3
+                                        && Math.abs(((Circle) cNode).getCenterY() + cNode.getParent().getLayoutY() - linesCoordinates[i][3]) < 3) {
                                     line.endXProperty().bind(((Circle) cNode).centerXProperty().add(node.layoutXProperty()));
                                     line.endYProperty().bind(((Circle) cNode).centerYProperty().add(node.layoutYProperty()));
                                 }
@@ -356,35 +360,147 @@ public class RootLayout extends AnchorPane {
     private void setDeleteOnDoubleClick(Line line ){
         line.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                DraggableNode[] nodes = getNodesFromLine(line);
-
-                switch (nodes[0].mType){
-                    case start:
-
-                        break;
-                    case rectangle:
-                        switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
-                            case top:
-                                break;
-                            case :
-                                break;
-                        }
-                        break;
-                    case rhomb:
-                        break;
-                    case end:
-                        break;
-                }
-
-
-
-
-
-                right_pane.getChildren().remove(line);
+              deleteLink(line);
                 event.consume();
             }
         });
     }
+    void deleteLink(Line line){
+    DraggableNode[] nodes = getNodesFromLine(line);
+
+    switch (nodes[0].mType){
+        case start:
+            nodes[0].model.removeOut(true);
+            break;
+        case rectangle:
+            switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
+                case top:
+                    nodes[0].model.removeEntry(nodes[1]);
+                    break;
+                case bottom:
+                    nodes[0].model.removeOut(true);
+                    break;
+            }
+            break;
+        case rhomb:
+            switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
+                case top:
+                    nodes[0].model.removeEntry(nodes[1]);
+                    break;
+                case left:
+                    nodes[0].model.removeOut(true);
+                    break;
+                case right:
+                    nodes[0].model.removeOut(false);
+                    break;
+            }
+            break;
+        case end:
+            nodes[0].model.removeEntry(nodes[1]);
+            break;
+    }
+    switch (nodes[1].mType){
+        case start:
+            nodes[1].model.removeOut(true);
+            break;
+        case rectangle:
+            switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
+                case top:
+                    nodes[1].model.removeEntry(nodes[0]);
+                    break;
+                case bottom:
+                    nodes[1].model.removeOut(true);
+                    break;
+            }
+            break;
+        case rhomb:
+            switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
+                case top:
+                    nodes[1].model.removeEntry(nodes[0]);
+                    break;
+                case left:
+                    nodes[1].model.removeOut(true);
+                    break;
+                case right:
+                    nodes[1].model.removeOut(false);
+                    break;
+            }
+            break;
+        case end:
+            nodes[1].model.removeEntry(nodes[0]);
+            break;
+    }
+
+    right_pane.getChildren().remove(line);
+}
+
+    void wireLink(Line line){
+        DraggableNode[] nodes = getNodesFromLine(line);
+        System.out.println(Arrays.toString(nodes));
+        switch (nodes[0].mType){
+            case start:
+                nodes[0].model.addOut(nodes[1],true);
+                break;
+            case rectangle:
+                switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
+                    case top:
+                        nodes[0].model.addEntry(nodes[1]);
+                        break;
+                    case bottom:
+                        nodes[0].model.addOut(nodes[1],true);
+                        break;
+                }
+                break;
+            case rhomb:
+                switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
+                    case top:
+                        nodes[0].model.addEntry(nodes[1]);
+                        break;
+                    case left:
+                        nodes[0].model.addOut(nodes[1],true);
+                        break;
+                    case right:
+                        nodes[0].model.addOut(nodes[1],false);
+                        break;
+                }
+                break;
+            case end:
+                nodes[0].model.addEntry(nodes[1]);
+                break;
+        }
+        switch (nodes[1].mType){
+            case start:
+                nodes[1].model.addOut(nodes[0],true);
+                break;
+            case rectangle:
+                switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
+                    case top:
+                        nodes[1].model.addEntry(nodes[0]);
+                        break;
+                    case bottom:
+                        nodes[1].model.addOut(nodes[0],true);
+                        break;
+                }
+                break;
+            case rhomb:
+                switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
+                    case top:
+                        nodes[1].model.addEntry(nodes[0]);
+                        break;
+                    case left:
+                        nodes[1].model.addOut(nodes[0],true);
+                        break;
+                    case right:
+                        nodes[1].model.addOut(nodes[0],false);
+                        break;
+                }
+                break;
+            case end:
+                nodes[1].model.addEntry(nodes[0]);
+                break;
+        }
+    }
+
 
     /**
      * return array of two() draggable nodes that connected by link

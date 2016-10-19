@@ -292,11 +292,11 @@ public class DraggableNode extends AnchorPane {
 							}
 					}
 
-					parent.getChildren().remove(self);
-					for (Node node : l){
-						parent.getChildren().remove(node);
-					}
 
+					for (Node node : l){
+						layout.deleteLink((Line)node);
+					}
+					parent.getChildren().remove(self);
 				}
 
 
