@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.*;
@@ -17,6 +18,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class RootLayout extends AnchorPane {
     //Local variables
@@ -544,6 +547,51 @@ public class RootLayout extends AnchorPane {
 
         }
         return res;
+    }
+    public void checkAllSystem(){
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        boolean isStart= false, isEnd = false,isFloatingNodes = true;
+        int counterFnodes = 0;
+        for (Node node :
+                right_pane.getChildren()) {
+            if (node instanceof DraggableNode){
+                if (((DraggableNode) node).getType().equals(DragIconType.start)) isStart = true;
+                if (((DraggableNode) node).getType().equals(DragIconType.end)) isEnd = true;
+                if (!isNoFloatingNode(((DraggableNode) node).model)){
+                    isFloatingNodes = false;
+                    counterFnodes++;
+                }
+            }
+        }
+        if (isStart&&isEnd&&isFloatingNodes) {
+            alert.setAlertType(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Your system is doing great.No errors.");
+        }else {
+            String contentText = "";
+            if (!isStart) contentText+=("Node Start is missing. ");
+            if (!isEnd) contentText = contentText +("Node End is missing. ");
+            if (!isFloatingNodes) contentText+=("There is "+ counterFnodes+ " floating nodes");
+            alert.setAlertType(Alert.AlertType.ERROR);
+            alert.setContentText(contentText);
+        }
+        alert.showAndWait();
+
+    }
+    private boolean isNoFloatingNode(ObjectModel node){
+        boolean flag = true;
+        if (node.entry.size()==0){
+            flag = false;
+            return flag;
+        }
+        for (DraggableNode n :
+                node.out) {
+            if (n == null){
+                flag = false;
+                return flag;
+            }
+        }
+        return flag;
     }
 
 }

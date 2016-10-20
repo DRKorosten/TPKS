@@ -137,6 +137,7 @@ public class Main extends Application {
 
 			highlightUnconnected.setOnAction(event -> {
 				if (debugMode){
+					layout.checkAllSystem();
 					layout.right_pane.setDisable(true);
 					for (Node node:	layout.right_pane.getChildren() ) {
 						if (node instanceof DraggableNode) {
