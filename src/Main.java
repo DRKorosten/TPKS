@@ -139,22 +139,32 @@ public class Main extends Application {
 				if (debugMode){
 					layout.right_pane.setDisable(true);
 					for (Node node:	layout.right_pane.getChildren() ) {
-						if (node instanceof DraggableNode &&
-								!((DraggableNode) node).getType().equals(DragIconType.start) &&
-								!((DraggableNode) node).getType().equals(DragIconType.end)){
-							System.out.println(((DraggableNode) node).model);
-							if (((DraggableNode) node).model.entry.equals(LinkSideType.none)){
-								node.setEffect(new DropShadow(10, Color.RED));
-							}else {
-								for (int i = 0; i < ((DraggableNode) node).model.out.length; i++) {
-									if (((DraggableNode) node).model.out[i].equals(LinkSideType.none)){
-										node.setEffect(new DropShadow(10, Color.RED));
-										break;
+						if (node instanceof DraggableNode) {
+							DraggableNode n = (DraggableNode) node;
+							System.out.println(n.model);
+							switch (n.mType) {
+								case rectangle:
+									if (!(n.model.entry.size() > 0 && n.model.out[0] != null)) {
+										n.setEffect(new DropShadow(10, Color.RED));
 									}
-								}
+									break;
+								case rhomb:
+									if (!(n.model.entry.size() > 0 && n.model.out[0] != null && n.model.out[1] != null)) {
+										n.setEffect(new DropShadow(10, Color.RED));
+									}
+									break;
+								case start:
+									if (!(n.model.out[0] != null)) {
+										n.setEffect(new DropShadow(10, Color.RED));
+									}
+									break;
+								case end:
+									if (!(n.model.entry.size() > 0)) {
+										n.setEffect(new DropShadow(10, Color.RED));
+									}
+									break;
 							}
-						}
-					}
+						}}
 				}else{
 					layout.right_pane.setDisable(false);
 					for (Node node:	layout.right_pane.getChildren() ) {
