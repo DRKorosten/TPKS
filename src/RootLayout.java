@@ -12,10 +12,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -90,46 +87,76 @@ public class RootLayout extends AnchorPane {
 
 
     public void drawLine(Circle circle) {
-        if (isFirstTarget) {
-            isFirstTarget = false;
-            Line tempLine = new Line();
-            tempLine.startXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
-            tempLine.startYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
-            tempLine.setEndX(circle.centerXProperty().add(circle.getParent().layoutXProperty()).doubleValue());
-            tempLine.setEndY(circle.centerYProperty().add(circle.getParent().layoutYProperty()).doubleValue());
-            tempLine.setStrokeWidth(2);
-            right_pane.getChildren().add(tempLine);
-            right_pane.setOnMouseMoved(event -> {
-                if (event.getX() > tempLine.getStartX()) {
-                    tempLine.setEndX(event.getX() - 2);
-                } else {
-                    tempLine.setEndX(event.getX() + 2);
-                }
-                if (event.getY() > tempLine.getStartY()) {
-                    tempLine.setEndY(event.getY() - 2);
-                } else {
-                    tempLine.setEndY(event.getY() + 2);
-                }
-            });
-            setDeleteOnDoubleClick(tempLine);
-            right_pane.setOnMouseClicked(event -> {
-                if (!(event.getTarget() instanceof Circle)) {
-                    right_pane.getChildren().remove(tempLine);
-                    isFirstTarget = true;
-                }
-            });
-            line = tempLine;
-
-        } else {
-            right_pane.setOnMouseMoved(null);
-            line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
-            line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
-            wireLink(line);
-            right_pane.setOnMouseClicked(null);
-            isFirstTarget = true;
-
-
+        if (!circle.equals(((DraggableNode)circle.getParent()).top)){
+            switch (((DraggableNode)circle.getParent()).getType()){
+                case start:
+                    if ((((DraggableNode)circle.getParent()).model.out[0])!=(null)){
+                      return;
+                    }
+                    break;
+                case rectangle:
+                    if ((((DraggableNode)circle.getParent()).model.out[0])!=(null)){
+                        return;
+                    }
+                    break;
+                case rhomb:
+                    if (((DraggableNode)circle.getParent()).getType(circle).equals(LinkSideType.left)&&(((DraggableNode)circle.getParent()).model.out[0])!=(null)){
+                        return;
+                    }
+                    if (((DraggableNode)circle.getParent()).getType(circle).equals(LinkSideType.right)&&(((DraggableNode)circle.getParent()).model.out[1])!=(null)){
+                        return;
+                    }
+                    break;
+            }
         }
+            if (isFirstTarget) {
+                if (circle.equals(((DraggableNode)circle.getParent()).top)) return;
+                isFirstTarget = false;
+                Line tempLine = new Line();
+                tempLine.startXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
+                tempLine.startYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
+                tempLine.setEndX(circle.centerXProperty().add(circle.getParent().layoutXProperty()).doubleValue());
+                tempLine.setEndY(circle.centerYProperty().add(circle.getParent().layoutYProperty()).doubleValue());
+                tempLine.setStrokeWidth(2);
+                right_pane.getChildren().add(tempLine);
+                right_pane.setOnMouseMoved(event -> {
+                    if (event.getX() > tempLine.getStartX()) {
+                        tempLine.setEndX(event.getX() - 2);
+                    } else {
+                        tempLine.setEndX(event.getX() + 2);
+                    }
+                    if (event.getY() > tempLine.getStartY()) {
+                        tempLine.setEndY(event.getY() - 2);
+                    } else {
+                        tempLine.setEndY(event.getY() + 2);
+                    }
+                });
+                setDeleteOnDoubleClick(tempLine);
+                right_pane.setOnMouseClicked(event -> {
+                    if (!(event.getTarget() instanceof Circle)) {
+                        right_pane.getChildren().remove(tempLine);
+                        isFirstTarget = true;
+                    }
+                });
+                line = tempLine;
+                this.setOnKeyPressed(event -> {
+                    if (event.getCode().equals(KeyCode.ESCAPE)) {
+                        right_pane.getChildren().remove(line);
+                        isFirstTarget = true;
+                    }
+                });
+
+            } else {
+                if (getNodesFromLine(line)[0].equals(circle.getParent())) return;
+                right_pane.setOnMouseMoved(null);
+                line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
+                line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
+                wireLink(line);
+                right_pane.setOnMouseClicked(null);
+                isFirstTarget = true;
+
+
+            }
     }
 
 
@@ -291,15 +318,10 @@ public class RootLayout extends AnchorPane {
         });
     }
 
-    public boolean isFirstTarget() {
-        return isFirstTarget;
-    }
-
     public void showAfterLoad(ArrayList<ObjectModel> dataModels) {
         clearRP();
         for (int i = 0; i < dataModels.size(); i++) {
             createNODE(dataModels.get(i));
-
         }
     }
 
@@ -357,6 +379,7 @@ public class RootLayout extends AnchorPane {
         }
 
     }
+
     private void setDeleteOnDoubleClick(Line line ){
         line.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -365,6 +388,7 @@ public class RootLayout extends AnchorPane {
             }
         });
     }
+
     void deleteLink(Line line){
     DraggableNode[] nodes = getNodesFromLine(line);
 
@@ -500,7 +524,6 @@ public class RootLayout extends AnchorPane {
                 break;
         }
     }
-
 
     /**
      * return array of two() draggable nodes that connected by link
