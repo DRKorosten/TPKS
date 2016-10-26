@@ -14,12 +14,12 @@ Thumbs.db
 *.pyc
 
 # Compiled C++ files
-out
+#out
 
 # Application specific files
 venv
 node_modules
 .sass-cache
 
-.idea
+.idea/workspace.xml
 *.class
