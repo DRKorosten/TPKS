@@ -45,7 +45,6 @@ public class ObjectModel implements Serializable{
     }
     public boolean addEntry(ObjectModel node){
         entry.add(node);
-
             return true;
     }
     public void removeEntry(ObjectModel node){
@@ -75,11 +74,11 @@ public class ObjectModel implements Serializable{
 
     @Override
     public String toString() {
-        String res= type.toString() +" "+ (layoutX) +" "+(layoutY)+" "+ " "+ Arrays.toString(out)+ " ";
-        if(entry!=null){
-            res+=entry.toString();
-        }
-        return res;
+//        String res= type.toString() +" "+ (layoutX) +" "+(layoutY)+" "+ " "+ Arrays.toString(out)+ " ";
+//        if(entry!=null){
+//            res+=entry.toString();
+//        }
+        return "";
 
     }
 }

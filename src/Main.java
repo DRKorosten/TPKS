@@ -10,18 +10,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Window;
-
 import java.io.*;
-import java.util.ArrayList;
 
 public class Main extends Application {
 	RootLayout layout;
@@ -91,6 +83,7 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("resources/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			primaryStage.setTitle("MODELING");
 			primaryStage.setResizable(true);
 
 			MenuBar menuBar = new MenuBar();
@@ -137,8 +130,10 @@ public class Main extends Application {
 
 			highlightUnconnected.setOnAction(event -> {
 				if (debugMode){
-					layout.checkAllSystem();
 					layout.right_pane.setDisable(true);
+					layout.right_pane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.45)");
+					primaryStage.setTitle("DEBUG MODE");
+					layout.checkAllSystem();
 					for (Node node:	layout.right_pane.getChildren() ) {
 						if (node instanceof DraggableNode) {
 							DraggableNode n = (DraggableNode) node;
@@ -168,6 +163,8 @@ public class Main extends Application {
 						}}
 				}else{
 					layout.right_pane.setDisable(false);
+					layout.right_pane.setStyle("-fx-background-color: transparent");
+					primaryStage.setTitle("MODELING");
 					for (Node node:	layout.right_pane.getChildren() ) {
 						if (node instanceof DraggableNode) {
 							node.setEffect(null);

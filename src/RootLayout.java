@@ -463,7 +463,6 @@ public class RootLayout extends AnchorPane {
 
     void wireLink(Line line){
         DraggableNode[] nodes = getNodesFromLine(line);
-        System.out.println(Arrays.toString(nodes));
         switch (nodes[0].mType){
             case start:
                 nodes[0].model.addOut(nodes[1].model,true);
@@ -526,6 +525,10 @@ public class RootLayout extends AnchorPane {
                 nodes[1].model.addEntry(nodes[0].model);
                 break;
         }
+        for (DraggableNode dn:nodes
+                ) {
+            System.out.println(dn.model);
+        }
     }
 
     /**
@@ -580,15 +583,17 @@ public class RootLayout extends AnchorPane {
     }
     private boolean isNoFloatingNode(ObjectModel node){
         boolean flag = true;
-        if (node.entry.size()==0){
+        if (node.entry.size()==0 && !node.type.equals(DragIconType.start)){
             flag = false;
             return flag;
         }
-        for (ObjectModel n :
-                node.out) {
-            if (n == null){
-                flag = false;
-                return flag;
+        if (!node.type.equals(DragIconType.end)) {
+            for (ObjectModel n :
+                    node.out) {
+                if (n == null) {
+                    flag = false;
+                    return flag;
+                }
             }
         }
         return flag;
