@@ -9,8 +9,8 @@ public class ObjectModel implements Serializable{
     String text = "";
     double layoutX;
     double layoutY;
-    ArrayList<DraggableNode> entry = new ArrayList<DraggableNode>();
-    DraggableNode[] out = new DraggableNode[0];
+    ArrayList<ObjectModel> entry = new ArrayList<ObjectModel>();
+    ObjectModel[] out = new ObjectModel[0];
 
 //    private ObjectModel(){}
     public ObjectModel(DragIconType type,Point2D layout){
@@ -19,15 +19,15 @@ public class ObjectModel implements Serializable{
         layoutY = layout.getY();
         switch (type){
             case rectangle:
-                out = new DraggableNode[1];
+                out = new ObjectModel[1];
 
                 break;
             case rhomb:
-                out = new DraggableNode[2];
+                out = new ObjectModel[2];
 
                 break;
             case start:
-                out = new DraggableNode[1];
+                out = new ObjectModel[1];
                 break;
             case end:
 
@@ -43,15 +43,15 @@ public class ObjectModel implements Serializable{
         layoutX = point.getX();
         layoutY = point.getY();
     }
-    public boolean addEntry(DraggableNode node){
+    public boolean addEntry(ObjectModel node){
         entry.add(node);
 
             return true;
     }
-    public void removeEntry(DraggableNode node){
+    public void removeEntry(ObjectModel node){
         entry.remove(entry.indexOf(node));
     }
-    public void addOut(DraggableNode node,boolean bool) {
+    public void addOut(ObjectModel node,boolean bool) {
         if(out.length==1) {
             out[0] = node;
             return;

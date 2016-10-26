@@ -402,7 +402,7 @@ public class RootLayout extends AnchorPane {
         case rectangle:
             switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
                 case top:
-                    nodes[0].model.removeEntry(nodes[1]);
+                    nodes[0].model.removeEntry(nodes[1].model);
                     break;
                 case bottom:
                     nodes[0].model.removeOut(true);
@@ -412,7 +412,7 @@ public class RootLayout extends AnchorPane {
         case rhomb:
             switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
                 case top:
-                    nodes[0].model.removeEntry(nodes[1]);
+                    nodes[0].model.removeEntry(nodes[1].model);
                     break;
                 case left:
                     nodes[0].model.removeOut(true);
@@ -423,7 +423,7 @@ public class RootLayout extends AnchorPane {
             }
             break;
         case end:
-            nodes[0].model.removeEntry(nodes[1]);
+            nodes[0].model.removeEntry(nodes[1].model);
             break;
     }
     switch (nodes[1].mType){
@@ -433,7 +433,7 @@ public class RootLayout extends AnchorPane {
         case rectangle:
             switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
                 case top:
-                    nodes[1].model.removeEntry(nodes[0]);
+                    nodes[1].model.removeEntry(nodes[0].model);
                     break;
                 case bottom:
                     nodes[1].model.removeOut(true);
@@ -443,7 +443,7 @@ public class RootLayout extends AnchorPane {
         case rhomb:
             switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
                 case top:
-                    nodes[1].model.removeEntry(nodes[0]);
+                    nodes[1].model.removeEntry(nodes[0].model);
                     break;
                 case left:
                     nodes[1].model.removeOut(true);
@@ -454,7 +454,7 @@ public class RootLayout extends AnchorPane {
             }
             break;
         case end:
-            nodes[1].model.removeEntry(nodes[0]);
+            nodes[1].model.removeEntry(nodes[0].model);
             break;
     }
 
@@ -466,64 +466,64 @@ public class RootLayout extends AnchorPane {
         System.out.println(Arrays.toString(nodes));
         switch (nodes[0].mType){
             case start:
-                nodes[0].model.addOut(nodes[1],true);
+                nodes[0].model.addOut(nodes[1].model,true);
                 break;
             case rectangle:
                 switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
                     case top:
-                        nodes[0].model.addEntry(nodes[1]);
+                        nodes[0].model.addEntry(nodes[1].model);
                         break;
                     case bottom:
-                        nodes[0].model.addOut(nodes[1],true);
+                        nodes[0].model.addOut(nodes[1].model,true);
                         break;
                 }
                 break;
             case rhomb:
                 switch (nodes[0].whatCircleContain(line.getStartX(),line.getStartY())){
                     case top:
-                        nodes[0].model.addEntry(nodes[1]);
+                        nodes[0].model.addEntry(nodes[1].model);
                         break;
                     case left:
-                        nodes[0].model.addOut(nodes[1],true);
+                        nodes[0].model.addOut(nodes[1].model,true);
                         break;
                     case right:
-                        nodes[0].model.addOut(nodes[1],false);
+                        nodes[0].model.addOut(nodes[1].model,false);
                         break;
                 }
                 break;
             case end:
-                nodes[0].model.addEntry(nodes[1]);
+                nodes[0].model.addEntry(nodes[1].model);
                 break;
         }
         switch (nodes[1].mType){
             case start:
-                nodes[1].model.addOut(nodes[0],true);
+                nodes[1].model.addOut(nodes[0].model,true);
                 break;
             case rectangle:
                 switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
                     case top:
-                        nodes[1].model.addEntry(nodes[0]);
+                        nodes[1].model.addEntry(nodes[0].model);
                         break;
                     case bottom:
-                        nodes[1].model.addOut(nodes[0],true);
+                        nodes[1].model.addOut(nodes[0].model,true);
                         break;
                 }
                 break;
             case rhomb:
                 switch (nodes[1].whatCircleContain(line.getEndX(),line.getEndY())){
                     case top:
-                        nodes[1].model.addEntry(nodes[0]);
+                        nodes[1].model.addEntry(nodes[0].model);
                         break;
                     case left:
-                        nodes[1].model.addOut(nodes[0],true);
+                        nodes[1].model.addOut(nodes[0].model,true);
                         break;
                     case right:
-                        nodes[1].model.addOut(nodes[0],false);
+                        nodes[1].model.addOut(nodes[0].model,false);
                         break;
                 }
                 break;
             case end:
-                nodes[1].model.addEntry(nodes[0]);
+                nodes[1].model.addEntry(nodes[0].model);
                 break;
         }
     }
@@ -584,7 +584,7 @@ public class RootLayout extends AnchorPane {
             flag = false;
             return flag;
         }
-        for (DraggableNode n :
+        for (ObjectModel n :
                 node.out) {
             if (n == null){
                 flag = false;
