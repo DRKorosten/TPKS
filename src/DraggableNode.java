@@ -13,7 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -121,6 +120,8 @@ public class DraggableNode extends AnchorPane {
 					bottom.setFill(Color.BLACK);
 					bottom.setCenterX(root_pane.getPrefWidth()/2);
 					bottom.setCenterY(root_pane.getPrefHeight()+2);
+					text.setText("Start");
+					text.setVisible(false);
 					break;
 				case end :
 					getStyleClass().add("end");
@@ -134,6 +135,8 @@ public class DraggableNode extends AnchorPane {
 					top.setFill(Color.BLACK);
 					top.setCenterX(root_pane.getPrefWidth()/2);
 					top.setCenterY(-2);
+					text.setText("End");
+					text.setVisible(false);
 					break;
 			case rectangle:
 				getStyleClass().add("dragicon");
@@ -196,7 +199,7 @@ public class DraggableNode extends AnchorPane {
 //					}else {
 //
 //					}
-					layout.drawLine(circle);
+					layout.drawLineArrow(circle);
 					event.consume();
 			});
 	       }
@@ -257,46 +260,46 @@ public class DraggableNode extends AnchorPane {
 					AnchorPane parent  = (AnchorPane) self.getParent();
 					layout.removeModel(model);
 
-					ArrayList<Line> l = new ArrayList<Line>();
+					ArrayList<LineArrow> l = new ArrayList<LineArrow>();
 
 					for (Node node : parent.getChildren()) {
 
-						if (node instanceof Line) {
+						if (node instanceof LineArrow) {
 
-							double xs = ((Line) node).getStartX() - root_pane.getLayoutX();
-							double ys = ((Line) node).getStartY() - root_pane.getLayoutY() ;
-							double xe = ((Line) node).getEndX() - root_pane.getLayoutX();
-							double ye = ((Line) node).getEndY() - root_pane.getLayoutY();
+							double xs = ((LineArrow) node).getStartX() - root_pane.getLayoutX();
+							double ys = ((LineArrow) node).getStartY() - root_pane.getLayoutY() ;
+							double xe = ((LineArrow) node).getEndX() - root_pane.getLayoutX();
+							double ye = ((LineArrow) node).getEndY() - root_pane.getLayoutY();
 							boolean fromStart = false;
 							if((fromStart = top.contains(xs,ys)) || top.contains(xe,ye)){
-								setNoneValue((Line)node,fromStart, LinkSideType.top);
-								l.add((Line)node);
+								setNoneValue((LineArrow)node,fromStart, LinkSideType.top);
+								l.add((LineArrow)node);
 
 							}else
 							if(fromStart = bottom.contains(xs,ys) ||
 									bottom.contains(xe,ye)){
-								setNoneValue((Line)node,fromStart, LinkSideType.bottom);
-								l.add((Line)node);
+								setNoneValue((LineArrow)node,fromStart, LinkSideType.bottom);
+								l.add((LineArrow)node);
 							} else
 							if(fromStart = right.contains(xs,ys) ||
 									right.contains(xe,ye)){
-								setNoneValue((Line)node,fromStart, LinkSideType.right);
-								l.add((Line)node);
+								setNoneValue((LineArrow)node,fromStart, LinkSideType.right);
+								l.add((LineArrow)node);
 
 							}else
 							if(fromStart = left.contains(xs,ys) ||
 									left.contains(xe,ye)) {
-								setNoneValue((Line)node,fromStart, LinkSideType.left);
-								l.add((Line) node);
+								setNoneValue((LineArrow)node,fromStart, LinkSideType.left);
+								l.add((LineArrow) node);
 							}
 							}
 					}
 
 
 					for (Node node : l){
-						layout.deleteLink((Line)node);
+						layout.deleteLink((LineArrow)node);
 					}
-					parent.getChildren().remove(self);
+					parent.getChildren().removeAll(self);
 				}
 
 
@@ -335,7 +338,7 @@ public class DraggableNode extends AnchorPane {
 			});		
 		}
 
-	private void setNoneValue(Line line, boolean start, LinkSideType type) {
+	private void setNoneValue(LineArrow line, boolean start, LinkSideType type) {
 //		for (:
 //			 ) {
 //
@@ -374,5 +377,9 @@ public class DraggableNode extends AnchorPane {
 		}else
 			return LinkSideType.left;
 
+	}
+
+	String getText(){
+		return text.getText();
 	}
 }

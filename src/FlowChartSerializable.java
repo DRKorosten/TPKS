@@ -1,11 +1,11 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Data implements Serializable {
+public class FlowChartSerializable implements Serializable {
     ArrayList<ObjectModel> models;
     double[][] linesCoordinates;
 
-    public Data(ArrayList<ObjectModel> models, double[][] links) {
+    public FlowChartSerializable(ArrayList<ObjectModel> models, double[][] links) {
         this.models = models;
         this.linesCoordinates = links;
     }

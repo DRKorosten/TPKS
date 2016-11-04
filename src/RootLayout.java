@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.sun.tools.internal.ws.processor.model.Model;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -16,6 +17,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
@@ -25,6 +27,7 @@ public class RootLayout extends AnchorPane {
     //Local variables
     private boolean isFirstTarget = true;
     public ArrayList<ObjectModel> models = new ArrayList<>();
+//    public ArrayList<ObjectModel> OBmodels = new ArrayList<>();
     @FXML
     SplitPane base_pane;
     @FXML
@@ -32,7 +35,7 @@ public class RootLayout extends AnchorPane {
     @FXML
     VBox left_pane;
     private DragIcon mDragOverIcon;
-    private Line line;
+    private LineArrow line;
     private EventHandler<DragEvent> mIconDragOverRoot;
     private EventHandler<DragEvent> mIconDragDropped;
     private EventHandler<DragEvent> mIconDragOverRightPane;
@@ -89,7 +92,7 @@ public class RootLayout extends AnchorPane {
     }
 
 
-    public void drawLine(Circle circle) {
+    public void drawLineArrow(Circle circle) {
         if (!circle.equals(((DraggableNode)circle.getParent()).top)){
             switch (((DraggableNode)circle.getParent()).getType()){
                 case start:
@@ -115,47 +118,53 @@ public class RootLayout extends AnchorPane {
             if (isFirstTarget) {
                 if (circle.equals(((DraggableNode)circle.getParent()).top)) return;
                 isFirstTarget = false;
-                Line tempLine = new Line();
-                tempLine.startXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
-                tempLine.startYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
-                tempLine.setEndX(circle.centerXProperty().add(circle.getParent().layoutXProperty()).doubleValue());
-                tempLine.setEndY(circle.centerYProperty().add(circle.getParent().layoutYProperty()).doubleValue());
-                tempLine.setStrokeWidth(2);
-                right_pane.getChildren().add(tempLine);
+                LineArrow tempLineArrow = new LineArrow();
+                tempLineArrow.setStartX(circle.getCenterX()+circle.getParent().getLayoutX());
+                tempLineArrow.setStartY(circle.getCenterY()+circle.getParent().getLayoutY());
+                tempLineArrow.setEndX(circle.centerXProperty().add(circle.getParent().layoutXProperty()).doubleValue());
+                tempLineArrow.setEndY(circle.centerYProperty().add(circle.getParent().layoutYProperty()).doubleValue());
+                tempLineArrow.startXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
+                tempLineArrow.startYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
+                tempLineArrow.setStrokeWidth(2);
+                right_pane.getChildren().addAll(tempLineArrow,tempLineArrow.getLine1(),tempLineArrow.getLine2());
+                tempLineArrow.setArrowCoordinates();
                 right_pane.setOnMouseMoved(event -> {
-                    if (event.getX() > tempLine.getStartX()) {
-                        tempLine.setEndX(event.getX() - 2);
+                    if (event.getX() > tempLineArrow.getStartX()) {
+                        tempLineArrow.setEndX(event.getX() - 2);
                     } else {
-                        tempLine.setEndX(event.getX() + 2);
+                        tempLineArrow.setEndX(event.getX() + 2);
                     }
-                    if (event.getY() > tempLine.getStartY()) {
-                        tempLine.setEndY(event.getY() - 2);
+                    if (event.getY() > tempLineArrow.getStartY()) {
+                        tempLineArrow.setEndY(event.getY() - 2);
                     } else {
-                        tempLine.setEndY(event.getY() + 2);
+                        tempLineArrow.setEndY(event.getY() + 2);
                     }
+                    tempLineArrow.setArrowCoordinates();
                 });
-                setDeleteOnDoubleClick(tempLine);
+                setDeleteOnDoubleClick(tempLineArrow);
                 right_pane.setOnMouseClicked(event -> {
                     if (!(event.getTarget() instanceof Circle)) {
-                        right_pane.getChildren().remove(tempLine);
+                        right_pane.getChildren().removeAll(tempLineArrow,tempLineArrow.getLine1(),tempLineArrow.getLine2());
                         isFirstTarget = true;
                     }
                 });
-                line = tempLine;
+                line = tempLineArrow;
                 this.setOnKeyPressed(event -> {
                     if (event.getCode().equals(KeyCode.ESCAPE)) {
-                        right_pane.getChildren().remove(line);
+                        right_pane.getChildren().removeAll(line,line.getLine1(),line.getLine2());
                         isFirstTarget = true;
                     }
                 });
 
             } else {
-                if (getNodesFromLine(line)[0].equals(circle.getParent())) return;
+                if (getNodesFromLineArrow(line)[0].equals(circle.getParent())) return;
                 right_pane.setOnMouseMoved(null);
                 line.endXProperty().bind(circle.centerXProperty().add(circle.getParent().layoutXProperty()));
                 line.endYProperty().bind(circle.centerYProperty().add(circle.getParent().layoutYProperty()));
                 wireLink(line);
                 right_pane.setOnMouseClicked(null);
+                line.setArrowCoordinates();
+                line.linkArrow();
                 isFirstTarget = true;
 
 
@@ -329,24 +338,28 @@ public class RootLayout extends AnchorPane {
     }
 
     public void clearRP() {
-        right_pane.getChildren().clear();
+
+        if (!right_pane.isDisable()){
+            right_pane.getChildren().clear();
+            models.clear();
+        }
     }
 
     public double[][] getLines() {
         int k = 0;
         for (Node node : right_pane.getChildren()) {
-            if (node instanceof Line) {
+            if (node instanceof LineArrow) {
                 k++;
             }
         }
         double[][] lines = new double[k][4];
         k = 0;
         for (Node node : right_pane.getChildren()) {
-            if (node instanceof Line) {
-                lines[k][0] = ((Line) node).getStartX();
-                lines[k][1] = ((Line) node).getStartY();
-                lines[k][2] = ((Line) node).getEndX();
-                lines[k][3] = ((Line) node).getEndY();
+            if (node instanceof LineArrow) {
+                lines[k][0] = ((LineArrow) node).getStartX();
+                lines[k][1] = ((LineArrow) node).getStartY();
+                lines[k][2] = ((LineArrow) node).getEndX();
+                lines[k][3] = ((LineArrow) node).getEndY();
                 k++;
             }
         }
@@ -355,9 +368,9 @@ public class RootLayout extends AnchorPane {
 
     public void createLines(double[][] linesCoordinates) {
         for (int i = 0; i < linesCoordinates.length; i++) {
-            Line line = new Line();
+            LineArrow line = new LineArrow();
             line.setStrokeWidth(2);
-            right_pane.getChildren().add(line);
+            right_pane.getChildren().addAll(line,line.getLine1(),line.getLine2());
             for (Node node : right_pane.getChildren()) {
                 if (node instanceof DraggableNode) {
                     for (Node cNode : ((DraggableNode) node).getChildren()) {
@@ -379,11 +392,14 @@ public class RootLayout extends AnchorPane {
                 }
             }
            setDeleteOnDoubleClick(line);
+
+           line.setArrowCoordinates();
+           line.linkArrow();
         }
 
     }
 
-    private void setDeleteOnDoubleClick(Line line ){
+    private void setDeleteOnDoubleClick(LineArrow line ){
         line.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
               deleteLink(line);
@@ -392,8 +408,8 @@ public class RootLayout extends AnchorPane {
         });
     }
 
-    void deleteLink(Line line){
-    DraggableNode[] nodes = getNodesFromLine(line);
+    void deleteLink(LineArrow line){
+    DraggableNode[] nodes = getNodesFromLineArrow(line);
 
     switch (nodes[0].mType){
         case start:
@@ -458,11 +474,11 @@ public class RootLayout extends AnchorPane {
             break;
     }
 
-    right_pane.getChildren().remove(line);
+    right_pane.getChildren().removeAll(line,line.getLine1(),line.getLine2());
 }
 
-    void wireLink(Line line){
-        DraggableNode[] nodes = getNodesFromLine(line);
+    void wireLink(LineArrow line){
+        DraggableNode[] nodes = getNodesFromLineArrow(line);
         switch (nodes[0].mType){
             case start:
                 nodes[0].model.addOut(nodes[1].model,true);
@@ -536,7 +552,7 @@ public class RootLayout extends AnchorPane {
      * @param l
      * @return
      */
-    private DraggableNode[] getNodesFromLine(Line l){
+    private DraggableNode[] getNodesFromLineArrow(LineArrow l){
         DraggableNode[] res = new DraggableNode[2];
 
         for(Node node: right_pane.getChildren()){
@@ -551,7 +567,10 @@ public class RootLayout extends AnchorPane {
         }
         return res;
     }
-    public void checkAllSystem(){
+    /*
+    return true if all is fine
+     */
+    public boolean checkAllSystem(){
         Alert alert = new Alert(Alert.AlertType.NONE);
         boolean isStart= false, isEnd = false,isFloatingNodes = true;
         int counterFnodes = 0;
@@ -579,7 +598,7 @@ public class RootLayout extends AnchorPane {
             alert.setContentText(contentText);
         }
         alert.showAndWait();
-
+       return !alert.getAlertType().equals(Alert.AlertType.ERROR);
     }
     private boolean isNoFloatingNode(ObjectModel node){
         boolean flag = true;
@@ -598,5 +617,54 @@ public class RootLayout extends AnchorPane {
         }
         return flag;
     }
+     int [][] getRouteMatrix() throws Exception {
+        int[][] matrix;
+        if (checkAllSystem()) {
+//            int k= 0 ;
+//            for (Node node  :right_pane.getChildren()) {
+//                if (node instanceof DraggableNode && !((DraggableNode) node).getType().equals(DragIconType.rhomb)){
+//                    k++;
+//                }
+//            }
+            matrix = new int[models.size()][models.size()];
+            for (ObjectModel m : models) {
+                for (int i = 0; i < m.out.length; i++) {
+                    //1-true
+                    //2-false
+                    //3-both outs in same node
+                    matrix[models.indexOf(m)][models.indexOf(m.out[i])]+=(i==0)? 1:2;
+                }
+            }
+            return matrix;
+        }
+        throw new Exception("System failed");
+    }
+    String[] getLabels(){
+        ArrayList<String> result = new ArrayList<>();
+        for (Node node  :right_pane.getChildren()) {
+            if (node instanceof DraggableNode
+//                    && !((DraggableNode) node).getType().equals(DragIconType.rhomb)
+                    ){
+                result.add(new String(((DraggableNode) node).getText()));
+            }
+        }
+        return result.toArray(new String[result.size()]);
+    }
+    String [][] getOPBlockMatrix() {
+        ObjectModel model;
+        int k = 0;
+        for (ObjectModel m: models){
+          if (m.type.equals(DragIconType.start)){
+              model = m;
+          }
+          if (!m.type.equals(DragIconType.rhomb)){
+              k++;
+          }
+        }
+        String[][] result = new String[k][k];
+
+      return result;
+    }
+
 
 }

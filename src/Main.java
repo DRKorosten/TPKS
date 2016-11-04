@@ -1,5 +1,3 @@
-
-import com.sun.javafx.tk.Toolkit;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -27,7 +25,7 @@ public class Main extends Application {
 			out1.close();
 			FileOutputStream fos = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(new Data(layout.models,layout.getLines()));
+			oos.writeObject(new FlowChartSerializable(layout.models,layout.getLines()));
 			oos.flush();
 			oos.close();
 		} catch (IOException e) {
@@ -41,7 +39,7 @@ public class Main extends Application {
 		try{
 			FileInputStream fis = new FileInputStream(f);
 			ObjectInputStream oin = new ObjectInputStream(fis);
-			Data data = (Data) oin.readObject();
+			FlowChartSerializable data = (FlowChartSerializable) oin.readObject();
 			layout.showAfterLoad(data.models);
 			layout.models.clear();
 			layout.models.addAll(data.models);
@@ -105,6 +103,10 @@ public class Main extends Application {
 			highlightUnconnected.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
 			checkMenu.getItems().add(highlightUnconnected);
 
+			MenuItem makeGraph = new MenuItem("Построить граф");
+			makeGraph.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
+			checkMenu.getItems().add(makeGraph);
+
 			openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
 			saveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
 			newMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
@@ -112,6 +114,16 @@ public class Main extends Application {
 			newMenuItem.setOnAction(actionEvent ->{
 				layout.clearRP();
 				layout.models.clear();
+			});
+			makeGraph.setOnAction(actionEvent ->{
+				try {
+					int[][] ma = layout.getRouteMatrix();
+					String [] strings = layout.getLabels();
+					Graph graph = new Graph(ma,strings);
+					graph.start(new Stage());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			});
 
 
@@ -133,7 +145,18 @@ public class Main extends Application {
 					layout.right_pane.setDisable(true);
 					layout.right_pane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.45)");
 					primaryStage.setTitle("DEBUG MODE");
-					layout.checkAllSystem();
+//					layout.checkAllSystem();
+					try {
+						int[][] result = layout.getRouteMatrix();
+						for (int i = 0; i < result.length; i++) {
+							for (int j = 0; j < result[i].length; j++) {
+								System.out.print(result[i][j]+" ");
+							}
+							System.out.println();
+						}
+					} catch (Exception e) {
+						System.out.println(e);
+					}
 					for (Node node:	layout.right_pane.getChildren() ) {
 						if (node instanceof DraggableNode) {
 							DraggableNode n = (DraggableNode) node;

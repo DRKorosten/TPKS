@@ -74,11 +74,6 @@ public class ObjectModel implements Serializable{
 
     @Override
     public String toString() {
-//        String res= type.toString() +" "+ (layoutX) +" "+(layoutY)+" "+ " "+ Arrays.toString(out)+ " ";
-//        if(entry!=null){
-//            res+=entry.toString();
-//        }
-        return "";
-
+       return type.toString() + " " + (layoutX) + " " + (layoutY) + " ";
     }
 }
