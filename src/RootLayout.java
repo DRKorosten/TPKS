@@ -1,33 +1,23 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
-import com.sun.tools.internal.ws.processor.model.Model;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 
 public class RootLayout extends AnchorPane {
     //Local variables
     private boolean isFirstTarget = true;
     public ArrayList<ObjectModel> models = new ArrayList<>();
-//    public ArrayList<ObjectModel> OBmodels = new ArrayList<>();
+    public ArrayList<ObjectModel> OBModels = new ArrayList<>();
     @FXML
     SplitPane base_pane;
     @FXML
@@ -620,12 +610,6 @@ public class RootLayout extends AnchorPane {
      int [][] getRouteMatrix() throws Exception {
         int[][] matrix;
         if (checkAllSystem()) {
-//            int k= 0 ;
-//            for (Node node  :right_pane.getChildren()) {
-//                if (node instanceof DraggableNode && !((DraggableNode) node).getType().equals(DragIconType.rhomb)){
-//                    k++;
-//                }
-//            }
             matrix = new int[models.size()][models.size()];
             for (ObjectModel m : models) {
                 for (int i = 0; i < m.out.length; i++) {
@@ -639,32 +623,125 @@ public class RootLayout extends AnchorPane {
         }
         throw new Exception("System failed");
     }
-    String[] getLabels(){
-        ArrayList<String> result = new ArrayList<>();
-        for (Node node  :right_pane.getChildren()) {
-            if (node instanceof DraggableNode
-//                    && !((DraggableNode) node).getType().equals(DragIconType.rhomb)
-                    ){
-                result.add(new String(((DraggableNode) node).getText()));
+    String [][] createMatrixForGraph(){
+        String [][] matrix;
+        sortModels();
+        OBModels = new ArrayList<>();
+        for (ObjectModel model: models) {
+            if (!model.type.equals(DragIconType.rhomb)){
+                OBModels.add(model);
             }
         }
-        return result.toArray(new String[result.size()]);
-    }
-    String [][] getOPBlockMatrix() {
-        ObjectModel model;
-        int k = 0;
-        for (ObjectModel m: models){
-          if (m.type.equals(DragIconType.start)){
-              model = m;
-          }
-          if (!m.type.equals(DragIconType.rhomb)){
-              k++;
-          }
+        matrix = new String[OBModels.size()][OBModels.size()];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = new String();
+            }
         }
-        String[][] result = new String[k][k];
+        for (ObjectModel model: OBModels) {
+               HashMap<ObjectModel,String> map = getWiredNodes(model);
+            for (ObjectModel m : map.keySet()) {
+                matrix[OBModels.indexOf(model)][OBModels.indexOf(m)] = map.get(m);
+            }
+            }
+            matrix[matrix.length-1][0] = " ";
+        return matrix;
+    }
+    String[] createLabelsForGraph(){
+        String[] s;
+        sortModels();
+        OBModels = new ArrayList<>();
+        for (ObjectModel model: models) {
+            if (!model.type.equals(DragIconType.rhomb)){
+                OBModels.add(model);
+            }
+        }
+        s = new String[OBModels.size()];
+        int k = 0;
+        for (ObjectModel m : OBModels) {
+            s[k] = OBModels.get(k++).text;
+        }
+        return s;
+    }
+    HashMap<ObjectModel,String> getWiredNodes(ObjectModel model) {
+        HashMap<ObjectModel,String> wiredNodes = new HashMap<>();
+        for (ObjectModel m : model.out) {
+            if (!m.type.equals(DragIconType.rhomb)){
+                if (!wiredNodes.containsKey(m)){
+                    String text = new String();
+                    if (model.type.equals(DragIconType.rhomb)){
+                        text = new String((!m.equals(model.out[0])? "!":"")+"("+ model.text+")");
+                    }else text = " ";
+                    wiredNodes.put(m,text);
+                }
+            }
+            else {
+                HashMap<ObjectModel,String> trueWay;
+                if (m.out[0].type.equals(DragIconType.rhomb)) trueWay= getWiredNodes(m.out[0]); else {trueWay = new HashMap<>();trueWay.put(m.out[0],"");}
+                for (ObjectModel ob :
+                        trueWay.keySet()) {
+                     String s = trueWay.get(ob);
+                    s = s.equals("")?new String("("+m.text+")") : new String(s+ " & ("+m.text+")");
+                    trueWay.replace(ob,s);
+                }
 
-      return result;
+                for (ObjectModel ob: trueWay.keySet()){
+                    if (!wiredNodes.containsKey(ob)) wiredNodes.put(ob,trueWay.get(ob)); else{
+                        String s = wiredNodes.get(ob);
+                        if (s.equals("")){
+                            s = s + " | "+trueWay.get(ob);
+                        }else s = trueWay.get(ob);
+                        wiredNodes.put(ob,s);
+                    }
+                }
+                HashMap<ObjectModel,String> falseWay;
+                    if (m.out[1].type.equals(DragIconType.rhomb)) falseWay= getWiredNodes(m.out[1]); else {falseWay = new HashMap<>();falseWay.put(m.out[1],"");}
+                for (ObjectModel ob :
+                        falseWay.keySet()) {
+                    String s = falseWay.get(ob);
+                    s = s.length()==0?new String("!("+m.text+")") : new String(s+ " & !("+m.text+")");
+                    falseWay.replace(ob,s);
+                }
+                for (ObjectModel ob: falseWay.keySet()){
+                    if (!wiredNodes.containsKey(ob)) wiredNodes.put(ob,falseWay.get(ob)); else{
+                        String s = wiredNodes.get(ob);
+                        if (s.equals("")){
+                            s = s + " | "+falseWay.get(ob);
+                        }else s = falseWay.get(ob);
+                        wiredNodes.put(ob,s);
+                    }
+                }
+            }
+        }
+        return wiredNodes;
     }
 
+
+    void sortModels(){
+        int i = 0;
+        for (ObjectModel m : models) {
+            if (m.type.equals(DragIconType.start)){
+                i = models.indexOf(m);
+                break;
+            }
+        }
+        if (i!=0){
+            ObjectModel temp = models.get(0);
+            models.set(0,models.get(i));
+            models.set(i,temp);
+        }
+        i = models.size()-1;
+        for (ObjectModel m : models) {
+            if (m.type.equals(DragIconType.end)){
+                i = models.indexOf(m);
+                break;
+            }
+        }
+        if (i!=models.size()-1){
+            ObjectModel temp = models.get(models.size()-1);
+            models.set(models.size()-1,models.get(i));
+            models.set(i,temp);
+        }
+    }
 
 }

@@ -12,6 +12,8 @@ import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Main extends Application {
 	RootLayout layout;
@@ -117,9 +119,11 @@ public class Main extends Application {
 			});
 			makeGraph.setOnAction(actionEvent ->{
 				try {
-					int[][] ma = layout.getRouteMatrix();
-					String [] strings = layout.getLabels();
-					Graph graph = new Graph(ma,strings);
+//					int[][] ma = layout.getRouteMatrix();
+//					HashMap<ObjectModel,String> linkednodes = layout.getWiredNodes(layout.models.get(0).out[0]);
+					String[][] matrix = layout.createMatrixForGraph();
+					String[] labels = layout.createLabelsForGraph();
+					Graph graph = new Graph(matrix,labels);
 					graph.start(new Stage());
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -145,7 +149,6 @@ public class Main extends Application {
 					layout.right_pane.setDisable(true);
 					layout.right_pane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.45)");
 					primaryStage.setTitle("DEBUG MODE");
-//					layout.checkAllSystem();
 					try {
 						int[][] result = layout.getRouteMatrix();
 						for (int i = 0; i < result.length; i++) {

@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ public class Graph extends Application {
     final static double RADIUS_CIRCLE = 40;
     final static double WIDTH = 800;
     final static double HEIGTH = 600;
-    private int[][] matrix;
+    private String[][] matrix;
     private String[] names;
     private ArrayList<Circle> nodes = new ArrayList<>();
 
-    public Graph(int[][] matrix,String[] names){
+    public Graph(String[][] matrix,String[] names){
         this.matrix = matrix;
         this.names = names;
     }
@@ -59,9 +60,15 @@ public class Graph extends Application {
         }
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j]>0){
+                if (matrix[i][j].length()>0){
                     LineArrow line = link(nodes.get(i),nodes.get(j));
-                    root.getChildren().addAll(line,line.getLine1(),line.getLine2());
+                    Text text = new Text(matrix[i][j]);
+                    double xVector = line.getEndX()-line.getStartX();
+                    double yVector = line.getEndY()-line.getStartY();
+                    text.setRotate(Math.atan2(yVector,xVector)*180/Math.PI);
+                    text.setLayoutX(line.getStartX()+xVector/4);
+                    text.setLayoutY(line.getStartY()+yVector/4);
+                    root.getChildren().addAll(line,line.getLine1(),line.getLine2(),text);
                 }
             }
         }
