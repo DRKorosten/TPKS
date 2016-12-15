@@ -744,4 +744,19 @@ public class RootLayout extends AnchorPane {
         }
     }
 
+    public String[] getTextForNodes(){
+        String[] s;
+        sortModels();
+        OBModels = new ArrayList<>();
+        for (ObjectModel model: models) {
+                OBModels.add(model);
+        }
+        s = new String[OBModels.size()];
+        int k = 0;
+        for (ObjectModel m : OBModels) {
+            s[k] = OBModels.get(k++).text;
+        }
+        return s;
+    }
+
 }

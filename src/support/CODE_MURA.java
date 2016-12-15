@@ -108,7 +108,7 @@ public class CODE_MURA extends JFrame {
             try
             {
                 //настройки
-                String settings = "SQUARED;strokeColor=blue;fillColor=pink";
+                String settings = "ROUNDED;strokeColor=blue;fillColor=pink";
                 Object[] v = new Object[Automat.size()]; //количество вершин состояний
                 
                 for (int i = 0; i < Automat.size(); i++) {

@@ -1,5 +1,7 @@
 package support.Minimization;
 
+import support.Main;
+
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -8,6 +10,7 @@ public class VHDLGenerator {
 	private static ArrayList<String> all_signal = new ArrayList<String>();
 	private static ArrayList<String> it_was = new ArrayList<String>();
 	private static int j = 0;
+	Main a = null;
 	
 	public static String getHeader(String[] header, String[] func, 
 			int xCount, int count1, int count2) {

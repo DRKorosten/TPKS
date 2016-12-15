@@ -11,7 +11,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
@@ -20,7 +22,7 @@ import java.util.StringTokenizer;
 public class Main
 {
     static JFrame frame = new JFrame("LSA"), jf; //основное окно программы
-    static JTextField pole = new JTextField();
+    public static JTextField pole = new JTextField();
     static ArrayList<String> all;
     static ArrayList<String> allSignals;
     static Integer[][] Vertex; //матрица связности
@@ -52,6 +54,7 @@ public class Main
     public static void main(String args[])
     {
     	new Main();
+
     	all = new ArrayList<String>();
     	allSignals = new ArrayList<String>();
     	countSignals = 0;
@@ -314,6 +317,7 @@ public class Main
         jb9.addActionListener( new ActionListener()
         {
 			public void actionPerformed(ActionEvent e) {
+				System.out.println();
 				Object[][] table = code2.getTable();
 		        String[] header = code2.getHeader();
 
@@ -537,6 +541,15 @@ public class Main
 			int place2 = Integer.parseInt(ggg.nextToken());
 			VertexSignals[place2][place] = 1;
 		}
+
+		VertexSignals = null;
+		System.out.println("all");
+		System.out.println(Arrays.toString(all.toArray()));
+		System.out.println("allSignals");
+		System.out.println(Arrays.toString(allSignals.toArray()));
+
+
+
 	}
 
 	private static void showErrorMessage(String string) {
@@ -674,7 +687,7 @@ public class Main
         try
         {
             //настройки
-            String settings = "SQUARED;strokeColor=blue;fillColor=pink";
+            String settings = "ROUNDED;strokeColor=blue;fillColor=pink";
             Object[] v = new Object[MuraMatrix.size()]; //количество вершин состояний
             for (int i = 0; i < MuraMatrix.size(); i++) {
                     //распределяем вершины по кругу!
