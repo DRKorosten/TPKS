@@ -48,7 +48,6 @@ public class CODE_MURA extends JFrame {
         super("Закодированный автомат!");
         app = mf;
         aThis = this;
-        
         Automat = mura;
         VertexAutomat = new ArrayList<String>();
 
@@ -108,7 +107,7 @@ public class CODE_MURA extends JFrame {
             try
             {
                 //настройки
-                String settings = "ROUNDED;strokeColor=blue;fillColor=pink";
+                String settings = "ROUNDED;strokeColor=blue;fillColor=green";
                 Object[] v = new Object[Automat.size()]; //количество вершин состояний
                 
                 for (int i = 0; i < Automat.size(); i++) {
@@ -120,8 +119,7 @@ public class CODE_MURA extends JFrame {
                         Point ptr2 = inRound(i, Automat.size(), 200);
                                 grap.insertVertex(parent, null,
 						toString(code.get(i),log2plus(code.size())),
-						ptr2.x, ptr2.y, 40,
-						15, "ROUNDED;fillColor=pink;Opacity=20");
+						ptr2.x, ptr2.y+10, 40,15,"ROUNDED;fillColor=white;strokeColor=white");
 
                 }
                 for (int i = 0; i < Automat.size(); i++) {
@@ -164,28 +162,28 @@ public class CODE_MURA extends JFrame {
         
         coded = true;
 
-        for (int l = 0; l < Automat.size(); l++) {
-            for (int j = 0; j < Automat.get(l).size(); j++) {
-                System.out.print(Automat.get(l).get(j) + " ");
-            }
-            System.out.println();
-        }
-
-        for (int l = 0; l < Automat.size(); l++) {
-            System.out.println("Vertex # " + l + " is : " + VertexAutomat.get(l));
-        }
-        cout();
+//        for (int l = 0; l < Automat.size(); l++) {
+//            for (int j = 0; j < Automat.get(l).size(); j++) {
+//                System.out.print(Automat.get(l).get(j) + " ");
+//            }
+//            System.out.println();
+//        }
+//
+//        for (int l = 0; l < Automat.size(); l++) {
+//            System.out.println("Vertex # " + l + " is : " + VertexAutomat.get(l));
+//        }
+//        cout();
     }
 
-    private void cout() {
-        if (code != null) {
-            for (int i = 0 ; i < code.size(); i++) {
-                if (code.get(i) != null)
-                    System.out.println(i + " Вершина имеет код " +
-                        toString(code.get(i), number) );
-            }
-        }
-    }
+//    private void cout() {
+//        if (code != null) {
+//            for (int i = 0 ; i < code.size(); i++) {
+//                if (code.get(i) != null)
+////                    System.out.println(i + " Вершина имеет код " +
+////                        toString(code.get(i), number) );
+//            }
+//        }
+//    }
 
 
     private void coode(int i) {
@@ -204,7 +202,7 @@ public class CODE_MURA extends JFrame {
                     //2.1 Включить розданные коды в список использованных
                     used--; //оставшиеся соседи
                     code.put(place, state); //добавить для нулевого - 0 код
-                    System.out.println(place + "hhhhh" + state);
+//                    System.out.println(place + "hhhhh" + state);
                     was.add(place);
                     //2.2 Найти все соседние коды (по отношению к текущему)
                     //2.3 Исключить из них все ранее использовавшиеся

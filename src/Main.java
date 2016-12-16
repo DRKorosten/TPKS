@@ -20,6 +20,7 @@ import java.util.HashMap;
 public class Main extends Application {
 	RootLayout layout;
 	boolean debugMode = true;
+	support.Main childW;
 
 	void save(File f)  {
 		try {
@@ -107,9 +108,13 @@ public class Main extends Application {
 			highlightUnconnected.setAccelerator(new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN));
 			checkMenu.getItems().add(highlightUnconnected);
 
-			MenuItem makeGraph = new MenuItem("Make gpraph");
+			MenuItem makeGraph = new MenuItem("Make graph");
 			makeGraph.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
 			checkMenu.getItems().add(makeGraph);
+			MenuItem makeCodeGraph = new MenuItem("Make code graph");
+			makeCodeGraph.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
+			checkMenu.getItems().add(makeCodeGraph);
+
 
 			openMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
 			saveMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
@@ -121,17 +126,18 @@ public class Main extends Application {
 			});
 			makeGraph.setOnAction(actionEvent ->{
 				try {
-//					int[][] ma = layout.getRouteMatrix();
-//					HashMap<ObjectModel,String> linkednodes = layout.getWiredNodes(layout.models.get(0).out[0]);
-//					String[][] matrix = layout.createMatrixForGraph();
-//					String[] labels = layout.createLabelsForGraph();
-//
-//					Graph graph = new Graph(matrix,labels);
-//					graph.start(new Stage());
-					support.Main childW = new support.Main();
+					childW = new support.Main();
 					childW.main(null);
 					childW.pole.setText(adapter());
-
+//					childW.jb5.doClick();
+//					childW.jb6.doClick();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			makeCodeGraph.setOnAction(actionEvent ->{
+				try {
+//					childW.jb7.doClick();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -238,7 +244,7 @@ public class Main extends Application {
 	public String adapter() throws Exception {
 		String [] texts = layout.getTextForNodes();
 		int [][] matrix = layout.getRouteMatrix();
-		System.out.println(Arrays.toString(texts));
+//		System.out.println(Arrays.toString(texts));
 		String res = "B";
 
 		for (int i = 1; i < matrix.length; i++) {

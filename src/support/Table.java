@@ -82,7 +82,7 @@ public class Table extends JFrame {
         			Graph.get(i).get(j).contains("x")) { //если есть переход
             		//найдем количество разных переходов по одной и той же связи
         			String[] temp = {Graph.get(i).get(j), i+"", j+""};
-        			System.out.println(Graph.get(i).get(j) + " : " + i + " : " + j);
+//        			System.out.println(Graph.get(i).get(j) + " : " + i + " : " + j);
         			list.add(temp); //формируем вектор переходов... понадобится
             	}
             }
@@ -118,7 +118,7 @@ public class Table extends JFrame {
         	//в векторе сначала идут х, потом y.
         	str[i] = arrayListX.get(i - triggerCount * 2); 
         }
-        System.out.println(arrayList);
+//        System.out.println(arrayList);
         //ЗАГОЛОВКИ ВЫХОДНЫХ СИГНАЛОВ
         for (int i = triggerCount * 2 + arrayListX.size(); 
 		         i < triggerCount * 2 + arrayListX.size() + arrayListY.size();

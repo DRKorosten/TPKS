@@ -35,7 +35,7 @@ public class Graph extends Application {
         AnchorPane root = new AnchorPane();
         primaryStage.setTitle("Graph");
         root.setOnMouseClicked(event -> {
-            System.out.println(event.getX()+" "+event.getY());
+//            System.out.println(event.getX()+" "+event.getY());
         });
         double difAngle = (Math.PI*2/(double)names.length);
         double angle = difAngle;

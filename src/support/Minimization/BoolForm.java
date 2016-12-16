@@ -337,17 +337,17 @@ public class BoolForm {
 		System.out.println();
 	}
 	
-	public static void same_func_out() {
-		
-		for (int i = 0; i < thesame.size(); i++) {
-			System.out.print("Same functions: ");
-			for (int j = 0; j < thesame.get(i).size(); j++) {
-				System.out.print(thesame.get(i).get(j) + ", ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-	}
+//	public static void same_func_out() {
+//
+//		for (int i = 0; i < thesame.size(); i++) {
+//			System.out.print("Same functions: ");
+//			for (int j = 0; j < thesame.get(i).size(); j++) {
+//				System.out.print(thesame.get(i).get(j) + ", ");
+//			}
+//			System.out.println();
+//		}
+//		System.out.println();
+//	}
 	
 	public static ArrayList<String> getTerms() { return hm; }
 	

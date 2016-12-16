@@ -85,7 +85,7 @@ public class VHDLGenerator {
 			place = Integer.parseInt(buff.substring(1));
 			buff = hm.get(Integer.parseInt(buff.substring(1)));
 
-			System.out.println(buff);
+//			System.out.println(buff);
 			str += "Term"+j +": ";
 			if (buff.contains("v")) {
 				StringTokenizer buf = new StringTokenizer(buff, " v ");

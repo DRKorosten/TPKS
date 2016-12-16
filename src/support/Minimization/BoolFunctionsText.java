@@ -95,7 +95,7 @@ public class BoolFunctionsText extends JFrame {
 		for (int i = 0; i < newForm.size(); i++) {
 			q += VHDLGenerator.getTypeeElements(FormsSignal,
 					counts.get(i), generateWithOut('(',')',funcs[i]));
-			System.out.println(funcs[i] + " " + FormsSignal);
+//			System.out.println(funcs[i] + " " + FormsSignal);
 		}
 		
 		s += VHDLGenerator.getSignal();
@@ -127,7 +127,7 @@ public class BoolFunctionsText extends JFrame {
 			counts.add(ff);
 		}
 
-		BoolForm.same_func_out();
+//		BoolForm.same_func_out();
 	}
 
 	public static String generateWithOut(char c, char d, String string) {

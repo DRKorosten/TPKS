@@ -561,51 +561,52 @@ public class RootLayout extends AnchorPane {
     return true if all is fine
      */
     public boolean checkAllSystem(){
-        Alert alert = new Alert(Alert.AlertType.NONE);
-        boolean isStart= false, isEnd = false,isFloatingNodes = true;
-        int counterFnodes = 0;
-        for (Node node :
-                right_pane.getChildren()) {
-            if (node instanceof DraggableNode){
-                if (((DraggableNode) node).getType().equals(DragIconType.start)) isStart = true;
-                if (((DraggableNode) node).getType().equals(DragIconType.end)) isEnd = true;
-                if (!isNoFloatingNode(((DraggableNode) node).model)){
-                    isFloatingNodes = false;
-                    counterFnodes++;
-                }
-            }
-        }
-        if (isStart&&isEnd&&isFloatingNodes) {
-            alert.setAlertType(Alert.AlertType.INFORMATION);
-            alert.setHeaderText(null);
-            alert.setContentText("Your system is doing great.No errors.");
-        }else {
-            String contentText = "";
-            if (!isStart) contentText+=("Node Start is missing. ");
-            if (!isEnd) contentText = contentText +("Node End is missing. ");
-            if (!isFloatingNodes) contentText+=("There is "+ counterFnodes+ " floating nodes");
-            alert.setAlertType(Alert.AlertType.ERROR);
-            alert.setContentText(contentText);
-        }
-        alert.showAndWait();
-       return !alert.getAlertType().equals(Alert.AlertType.ERROR);
-    }
-    private boolean isNoFloatingNode(ObjectModel node){
-        boolean flag = true;
-        if (node.entry.size()==0 && !node.type.equals(DragIconType.start)){
-            flag = false;
-            return flag;
-        }
-        if (!node.type.equals(DragIconType.end)) {
-            for (ObjectModel n :
-                    node.out) {
-                if (n == null) {
-                    flag = false;
-                    return flag;
-                }
-            }
-        }
-        return flag;
+//        Alert alert = new Alert(Alert.AlertType.NONE);
+//        boolean isStart= false, isEnd = false,isFloatingNodes = true;
+//        int counterFnodes = 0;
+//        for (Node node :
+//                right_pane.getChildren()) {
+//            if (node instanceof DraggableNode){
+//                if (((DraggableNode) node).getType().equals(DragIconType.start)) isStart = true;
+//                if (((DraggableNode) node).getType().equals(DragIconType.end)) isEnd = true;
+//                if (!isNoFloatingNode(((DraggableNode) node).model)){
+//                    isFloatingNodes = false;
+//                    counterFnodes++;
+//                }
+//            }
+//        }
+//        if (isStart&&isEnd&&isFloatingNodes) {
+//            alert.setAlertType(Alert.AlertType.INFORMATION);
+//            alert.setHeaderText(null);
+//            alert.setContentText("Your system is doing great.No errors.");
+//        }else {
+//            String contentText = "";
+//            if (!isStart) contentText+=("Node Start is missing. ");
+//            if (!isEnd) contentText = contentText +("Node End is missing. ");
+//            if (!isFloatingNodes) contentText+=("There is "+ counterFnodes+ " floating nodes");
+//            alert.setAlertType(Alert.AlertType.ERROR);
+//            alert.setContentText(contentText);
+//        }
+//        alert.showAndWait();
+//       return !alert.getAlertType().equals(Alert.AlertType.ERROR);
+//    }
+//    private boolean isNoFloatingNode(ObjectModel node){
+//        boolean flag = true;
+//        if (node.entry.size()==0 && !node.type.equals(DragIconType.start)){
+//            flag = false;
+//            return flag;
+//        }
+//        if (!node.type.equals(DragIconType.end)) {
+//            for (ObjectModel n :
+//                    node.out) {
+//                if (n == null) {
+//                    flag = false;
+//                    return flag;
+//                }
+//            }
+//        }
+//        return flag;
+        return true;
     }
      int [][] getRouteMatrix() throws Exception {
         int[][] matrix;
